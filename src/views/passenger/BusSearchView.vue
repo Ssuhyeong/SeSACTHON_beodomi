@@ -2,7 +2,11 @@
   <div class="bus-search" id="container">
     <h2 class="title">{{ title }}</h2>
     <button aria-label="음성검색 버튼" class="circle" @click="record"></button>
-    <button aria-label="키보드 사용하기 버튼" class="keyboard-btn">
+    <button
+      aria-label="키보드 사용하기 버튼"
+      class="keyboard-btn"
+      @click="goKeyboardSearch"
+    >
       키보드 사용하기
     </button>
 
@@ -20,6 +24,7 @@
 </template>
 
 <script>
+  import router from '@/router/index';
   import {onMounted, ref} from 'vue';
   export default {
     name: 'BusSearchView',
@@ -28,20 +33,18 @@
 
       // 음성 검색
       function record() {
-        const self = this;
-
-        self.speechRecognition.onresult = function (event) {
-          self.recognizedText =
-            self.recognizedText + ' ' + event.results[0][0].transcript;
-        };
-
-        this.speechRecognition.start();
+        // const self = this;
+        // self.speechRecognition.onresult = function (event) {
+        //   self.recognizedText =
+        //     self.recognizedText + ' ' + event.results[0][0].transcript;
+        // };
+        // this.speechRecognition.start();
       }
 
-      onMounted(() => {
-        var SpeechRecognition = SpeechRecognition;
-        this.speechRecognition = new SpeechRecognition();
-      });
+      //   onMounted(() => {
+      //     var SpeechRecognition = SpeechRecognition;
+      //     this.speechRecognition = new SpeechRecognition();
+      //   });
 
       // 전체 읽어주기 기능
       const ariaLive = ref('polite');
@@ -69,6 +72,11 @@
         }, 100);
       };
 
+      // 키보드 사용하기 버튼 클릭 이벤트
+      const goKeyboardSearch = () => {
+        router.push('/keyboardSearch');
+      };
+
       return {
         title,
         record,
@@ -76,6 +84,7 @@
         ariaHidden,
         pageContent,
         readWholeText,
+        goKeyboardSearch,
       };
     },
   };
@@ -95,7 +104,7 @@
       font-size: 28px;
       line-height: 34.16px;
       width: 313px;
-      padding-top: 124px;
+      padding-top: 100px;
     }
 
     .circle {
