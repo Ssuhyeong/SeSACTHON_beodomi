@@ -1,6 +1,11 @@
-import {createRouter, createWebHashHistory} from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
+  {
+    path: '/reservation',
+    name: 'reservationView',
+    component: () => import('@/views/ReservationView')
+  },
   {
     path: '/',
     name: 'mainView',
