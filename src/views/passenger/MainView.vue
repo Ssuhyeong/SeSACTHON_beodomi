@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <button class="btn" @click="goSearchView">버스 노선 검색</button>
-    <button class="btn">자주 가는 정류장</button>
+    <button class="btn" @click="goFavoriteStopView">승차벨 사용 이력</button>
     <button class="btn">가까운 정류장</button>
   </div>
 </template>
@@ -12,12 +12,19 @@
   export default {
     name: 'MainView',
     setup() {
+      // 버스 노선 검색 페이지로 이동
       const goSearchView = () => {
         router.push('/search');
       };
 
+      // 즐겨 찾는 정류장 페이지로 이동
+      const goFavoriteStopView = () => {
+        router.push('/favoriteStop');
+      };
+
       return {
         goSearchView,
+        goFavoriteStopView,
       };
     },
   };
