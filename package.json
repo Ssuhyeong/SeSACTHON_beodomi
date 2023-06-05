@@ -51,6 +51,7 @@
     "not dead",
     "not ie 11"
   ],
+  "main": "babel.config.js",
   "rules": {
     "vue/multi-word-component-names": 0
   }

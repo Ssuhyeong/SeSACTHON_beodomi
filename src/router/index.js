@@ -1,17 +1,26 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import ReservationView from '@/views/ReservationView'
 
 const routes = [
   {
-    path: '/',
+    path: '/reservation',
     name: 'reservationView',
-    component: ReservationView
-  }
-]
+    component: () => import('@/views/ReservationView')
+  },
+  {
+    path: '/',
+    name: 'mainView',
+    component: () => import('@/views/passenger/MainView.vue'),
+  },
+  {
+    path: '/search',
+    name: 'busSearchView',
+    component: () => import('@/views/passenger/BusSearchView.vue'),
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
