@@ -2,13 +2,13 @@
   <div class="favorite-stop">
     <div class="none-favorite" v-if="false">
       <h1>사용한 승차벨 &nbsp; 이력이 없습니다.</h1>
-      <button class="search-btn">
+      <button class="search-btn" @click="goBusSearchView">
         <span class="text">정류장 검색하기</span>
         <span class="icon">&gt;</span>
       </button>
     </div>
     <div class="favorite" v-else>
-      <h1>자주 가는 정류장</h1>
+      <h1>승차벨 사용 정류장</h1>
       <div class="stops">
         <div class="stop" v-for="i in [1, 2, 3, 4, 5, 6, 7]" :key="i">
           {{ i }}
@@ -19,8 +19,21 @@
 </template>
 
 <script>
+  import {useRouter} from 'vue-router';
   export default {
     name: 'FavoriteStopView',
+    setup() {
+      const router = useRouter();
+
+      // 정류장 검색하기 버튼 클릭 이벤트
+      const goBusSearchView = () => {
+        router.push('/search');
+      };
+
+      return {
+        goBusSearchView,
+      };
+    },
   };
 </script>
 
@@ -72,6 +85,7 @@
   .favorite {
     text-align: center;
     margin-top: 105px;
+    padding: 0px 16px;
 
     h1 {
       font-weight: 700;

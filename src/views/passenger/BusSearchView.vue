@@ -1,7 +1,7 @@
 <template>
   <div class="bus-search" id="container" ref="root">
     <h2 class="title">{{ title }}</h2>
-    <button aria-label="음성검색 버튼" class="circle" @click="record"></button>
+    <VoiceComp @click="voice_result()" />
     <button
       aria-label="키보드 사용하기 버튼"
       class="keyboard-btn"
@@ -26,38 +26,57 @@
 
 <script>
   import router from '@/router/index';
-  import {onMounted, ref} from 'vue';
   import {usePassengerStore} from '@/store/passsengerStore';
+  import {ref} from 'vue';
+  import {useRouter} from 'vue-router';
+  import VoiceComp from '@/components/VoiceComp.vue';
   export default {
     name: 'BusSearchView',
+    components: {
+      VoiceComp,
+    },
     setup() {
       const passengerStore = usePassengerStore();
 
       const title = ref('버스 노선 혹은 정류장 이름을 입력하세요.');
-
+      const router = useRouter();
       // 음성 검색
-      function record() {
-        // const self = this;
-        // self.speechRecognition.onresult = function (event) {
-        //   self.recognizedText =
-        //     self.recognizedText + ' ' + event.results[0][0].transcript;
-        // };
-        // this.speechRecognition.start();
-      }
+      const voice_result = () => {
+        window.SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
 
-      //   onMounted(() => {
-      //     var SpeechRecognition = SpeechRecognition;
-      //     this.speechRecognition = new SpeechRecognition();
-      //   });
+        let recognition = new window.webkitSpeechRecognition();
+        recognition.interimResults = true;
+        recognition.lang = 'ko-KR';
+
+        recognition.start();
+
+        recognition.onresult = function (e) {
+          let texts = Array.from(e.results)
+            .map(results => results[0].transcript)
+            .join('');
+
+          title.value = texts;
+          setTimeout(() => {
+            router.push({
+              name: 'keyboardSearchView',
+              params: {keyword: title.value},
+            });
+          }, 3000);
+        };
+      };
 
       // 키보드 사용하기 버튼 클릭 이벤트
       const goKeyboardSearch = () => {
-        router.push('/keyboardSearch');
+        router.push({
+          name: 'keyboardSearchView',
+          params: {keyword: 'keyboard'},
+        });
       };
 
       return {
         title,
-        record,
+        voice_result,
         goKeyboardSearch,
         passengerStore,
       };
