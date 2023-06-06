@@ -1,7 +1,7 @@
 <template>
-  <div class="bus-search" id="container">
+  <div class="bus-search" id="container" ref="root">
     <h2 class="title">{{ title }}</h2>
-    <VoiceComp @click="voice_result()"/>
+    <VoiceComp @click="voice_result()" />
     <button
       aria-label="키보드 사용하기 버튼"
       class="keyboard-btn"
@@ -16,94 +16,77 @@
     <button
       aria-label="전체 글을 읽어주는 버튼"
       class="talk-btn"
-      @click="readWholeText"
+      @click.prevent="readAll()"
     >
       음성버튼
     </button>
+    <div ref="voice"></div>
   </div>
 </template>
 
 <script>
-  import { ref } from 'vue';
+  import router from '@/router/index';
+  import {usePassengerStore} from '@/store/passsengerStore';
+  import {ref} from 'vue';
+  import {useRouter} from 'vue-router';
   import VoiceComp from '@/components/VoiceComp.vue';
-  import { useRouter } from 'vue-router';
-
   export default {
     name: 'BusSearchView',
     components: {
-      VoiceComp
+      VoiceComp,
     },
     setup() {
+      const passengerStore = usePassengerStore();
+
       const title = ref('버스 노선 혹은 정류장 이름을 입력하세요.');
       const router = useRouter();
       // 음성 검색
       const voice_result = () => {
-      window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        window.SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
 
-      let recognition = new window.webkitSpeechRecognition
-      recognition.interimResults = true;
-      recognition.lang = 'ko-KR';
+        let recognition = new window.webkitSpeechRecognition();
+        recognition.interimResults = true;
+        recognition.lang = 'ko-KR';
 
+        recognition.start();
 
-      recognition.start();
+        recognition.onresult = function (e) {
+          let texts = Array.from(e.results)
+            .map(results => results[0].transcript)
+            .join('');
 
-      recognition.onresult = function(e) {
-        let texts = Array.from(e.results).map(results => results[0].transcript).join("");
-
-        title.value = texts;
-        setTimeout(() => 
-        {
-          router.push({
-            name: 'keyboardSearchView',
-            params: { keyword: title.value },
-          })
-        }, 3000);
-      };
-    }
-
-      // 전체 읽어주기 기능
-      const ariaLive = ref('polite');
-      const ariaHidden = ref('');
-      const pageContent = ref('');
-
-      const readWholeText = () => {
-        const contentElement = document.getElementById('container');
-        const content = contentElement.innerText;
-
-        // 읽어주기 전 잠시 숨김처리
-        ariaHidden.value = true;
-
-        // 스크린 리더에게 전체 내용을 읽어달라는 요청
-        ariaLive.value = 'assertive';
-        pageContent.value = content;
-
-        console.log(pageContent.value);
-        // pageContent.value = '';
-
-        // 읽기가 완료된 후 다시 숨김처리 해제
-        setTimeout(() => {
-          ariaLive.value = 'polite';
-          ariaHidden.value = '';
-        }, 100);
+          title.value = texts;
+          setTimeout(() => {
+            router.push({
+              name: 'keyboardSearchView',
+              params: {keyword: title.value},
+            });
+          }, 3000);
+        };
       };
 
       // 키보드 사용하기 버튼 클릭 이벤트
       const goKeyboardSearch = () => {
         router.push({
-            name: 'keyboardSearchView',
-            params: { keyword: 'keyboard' },
-          })
+          name: 'keyboardSearchView',
+          params: {keyword: 'keyboard'},
+        });
       };
 
       return {
         title,
         voice_result,
-        ariaLive,
-        ariaHidden,
-        pageContent,
-        readWholeText,
         goKeyboardSearch,
+        passengerStore,
       };
+    },
+    mounted() {},
+    methods: {
+      readAll() {
+        const text = '과장이 아니란걸 알게됐어';
+        this.passengerStore.announcePageContent(text, this.$refs.voice);
+      },
     },
   };
 </script>
