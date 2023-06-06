@@ -34,8 +34,9 @@ const routes = [
   },
   {
     // 역에서 탈 수 있는 버스 조회 페이지
-    path: '/stopBusList',
+    path: '/stopBusList/:arsId',
     name: 'stopBusListView',
+    props: true,
     component: () => import('@/views/passenger/StopBusListView.vue'),
   },
 ];
