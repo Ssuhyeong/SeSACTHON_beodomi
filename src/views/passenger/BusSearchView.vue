@@ -1,5 +1,5 @@
 <template>
-  <div class="bus-search" id="container">
+  <div class="bus-search" id="container" ref="root">
     <h2 class="title">{{ title }}</h2>
     <button aria-label="음성검색 버튼" class="circle" @click="record"></button>
     <button
@@ -16,19 +16,23 @@
     <button
       aria-label="전체 글을 읽어주는 버튼"
       class="talk-btn"
-      @click="readWholeText"
+      @click.prevent="readAll()"
     >
       음성버튼
     </button>
+    <div ref="voice"></div>
   </div>
 </template>
 
 <script>
   import router from '@/router/index';
   import {onMounted, ref} from 'vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
   export default {
     name: 'BusSearchView',
     setup() {
+      const passengerStore = usePassengerStore();
+
       const title = ref('버스 노선 혹은 정류장 이름을 입력하세요.');
 
       // 음성 검색
@@ -46,32 +50,6 @@
       //     this.speechRecognition = new SpeechRecognition();
       //   });
 
-      // 전체 읽어주기 기능
-      const ariaLive = ref('polite');
-      const ariaHidden = ref('');
-      const pageContent = ref('');
-
-      const readWholeText = () => {
-        const contentElement = document.getElementById('container');
-        const content = contentElement.innerText;
-
-        // 읽어주기 전 잠시 숨김처리
-        ariaHidden.value = true;
-
-        // 스크린 리더에게 전체 내용을 읽어달라는 요청
-        ariaLive.value = 'assertive';
-        pageContent.value = content;
-
-        console.log(pageContent.value);
-        // pageContent.value = '';
-
-        // 읽기가 완료된 후 다시 숨김처리 해제
-        setTimeout(() => {
-          ariaLive.value = 'polite';
-          ariaHidden.value = '';
-        }, 100);
-      };
-
       // 키보드 사용하기 버튼 클릭 이벤트
       const goKeyboardSearch = () => {
         router.push('/keyboardSearch');
@@ -80,12 +58,16 @@
       return {
         title,
         record,
-        ariaLive,
-        ariaHidden,
-        pageContent,
-        readWholeText,
         goKeyboardSearch,
+        passengerStore,
       };
+    },
+    mounted() {},
+    methods: {
+      readAll() {
+        const text = '과장이 아니란걸 알게됐어';
+        this.passengerStore.announcePageContent(text, this.$refs.voice);
+      },
     },
   };
 </script>
