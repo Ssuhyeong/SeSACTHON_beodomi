@@ -43,10 +43,38 @@
 <script>
   import router from '@/router';
   import {ref} from 'vue';
+  import axios from 'axios';
 
   export default {
     name: 'NearStopView',
     setup() {
+      const userLat = ref(0);
+      const userLng = ref(0);
+
+      // 사용자의 현재 위치 get
+      const locationSuccess = pos => {
+        userLat.value = pos.coords.latitude;
+        userLng.value = pos.coords.longitude;
+        console.log(`현위치: ${userLat.value}, ${userLng.value}`);
+
+        // 사용자 위치 기준으로 가까운 정류장 get
+        // TODO: api 승인 후 주석 제거!!
+
+        // const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${
+        //   process.env.VUE_APP_ROUTE_SERVICE_KEY
+        // }&tmX=${userLng.value}&txY=${userLat.value}&radius=${300}`;
+        // axios
+        //   .get(url)
+        //   .then(res => console.log(res.data))
+        //   .catch(err => console.log(err));
+      };
+
+      const locationFail = err => {
+        console.log('현위치를 찾을 수 없습니다');
+      };
+
+      navigator.geolocation.getCurrentPosition(locationSuccess, locationFail);
+
       // 클릭한 역 이름
       const clickStop = ref(null);
 
@@ -56,13 +84,27 @@
           // 클릭 취소
           clickStop.value = null;
         } else {
+          // TODO: api 승인 후 아래 주석 제거
+          // 해당 역에서 탑승 가능한 버스 목록 조회
+          // const arsId = stopName에 해당하는 버스 arsId 가져와야대
+          // const url = `http://ws.bus.go.kr/api/rest/stationinfo/getRouteByStation?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&arsId=${arsId}`;
+
+          // // 특정 정류장에 경우하는 버스 노선 정보 list
+          // axios.get(url)
+          // .then(res=>console.log(res.data))
+          // .catch(err=>console.log(err));
+
           clickStop.value = stopName;
         }
       };
 
       // 해당 역의 경유 버스 보여주는 페이지로 이동
       const goStopBusListView = () => {
-        router.push('/stopBusList');
+        //TODO: api 승인 후 arsId 가져와서 파라미터로 넣어주기
+        router.push({
+          name: 'stopBusListView',
+          params: {arsId: 1234},
+        });
       };
 
       return {

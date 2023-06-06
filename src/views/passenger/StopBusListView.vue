@@ -16,9 +16,22 @@
 </template>
 
 <script>
+  import axios from 'axios';
+  import {useRoute} from 'vue-router';
   export default {
     name: 'StopBusList',
-    setup() {},
+    setup() {
+      const route = useRoute();
+
+      //TODO: api후 주석 제거하기
+      // const arsId = JSON.parse(route.params.arsId)
+      // const url = `http://ws.bus.go.kr/api/rest/stationinfo/getRouteByStation?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&arsId=${arsId}`;
+
+      // // 특정 정류장에 경우하는 버스 노선 정보 list
+      // axios.get(url)
+      // .then(res=>console.log(res.data))
+      // .catch(err=>console.log(err));
+    },
   };
 </script>
 
