@@ -19,7 +19,7 @@ const routes = [
   {
     path: '/reservation',
     name: 'reservationView',
-    component: () => import('@/views/ReservationView'),
+    component: () => import('@/views/passenger/ReservationView'),
   },
   {
     path: '/search',
@@ -27,7 +27,7 @@ const routes = [
     component: () => import('@/views/passenger/BusSearchView.vue'),
   },
   {
-    path: '/keyboardSearch',
+    path: '/keyboardSearch/:keyword',
     name: 'keyboardSearchView',
     component: () => import('@/views/passenger/KeyboardSearchView.vue'),
   },
@@ -48,6 +48,24 @@ const routes = [
     name: 'stopBusListView',
     props: true,
     component: () => import('@/views/passenger/StopBusListView.vue'),
+  },
+  {
+    // 승차벨 페이지
+    path: '/riding',
+    name: 'RidingView',
+    component: () => import('@/views/passenger/RidingView.vue'),
+  },
+  {
+    // 정거장 도착 알림
+    path: '/ridingAlarm',
+    name: 'RidingAlarmView',
+    component: () => import('@/views/passenger/RidingAlarmView.vue'),
+  },
+  {
+    // 정거장 도착 알림
+    path: '/landing',
+    name: 'LandingView',
+    component: () => import('@/views/passenger/LandingView.vue'),
   },
 ];
 
