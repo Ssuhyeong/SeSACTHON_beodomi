@@ -8,9 +8,8 @@
   text-align: center
 }
 
-  
-  html {
-    height: 100vh;
-  }
+html {
+  height: 100vh;
+}
 
 </style>

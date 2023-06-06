@@ -1,10 +1,10 @@
 <template>
   <section>
-    <div class='phone'>
+    <div class='voice' @click="test()">
       <p>voice</p>
     </div>
-    <div class="circle1"></div>
-    <div class="circle2"></div>
+    <div class="circle1" :class="{ ani: flag }"></div>
+    <div class="circle2" :class="{ ani: flag }"></div>
   </section>
 </template>
 
@@ -13,6 +13,16 @@ export default {
   name: 'VoiceComp',
   components: {
     
+  },
+  data() {
+    return {
+      flag: false
+    }
+  },
+  methods: {
+    test() {
+      this.flag = !this.flag;
+    }
   }
 }
 </script>
@@ -26,7 +36,7 @@ section {
   align-items: center;
 }
 
-.phone {
+.voice {
   z-index: 2;
   background-color: #D9D9D9;
   animation: phone 1s cubic-bezier(0.12, 0.7, 0.74, 0.71) infinite alternate-reverse;
@@ -34,6 +44,7 @@ section {
   justify-content: center;
   align-items: center;
   border: 0.5px white solid;
+  cursor: pointer;
 }
 
 div {
@@ -42,11 +53,14 @@ div {
   border-radius: 50%;
   background-color: #D9D9D9;
   position: absolute;
-  animation: scaling 2s cubic-bezier(0.12, 0.7, 0.74, 0.71) infinite;
 }
 
 p{
   font-size: 0.1px;
+}
+
+.ani {
+  animation: scaling 2s cubic-bezier(0.12, 0.7, 0.74, 0.71) infinite;
 }
 
 @keyframes scaling {
