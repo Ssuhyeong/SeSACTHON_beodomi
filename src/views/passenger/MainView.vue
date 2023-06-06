@@ -3,6 +3,7 @@
     <button class="btn" @click="goSearchView">버스 노선 검색</button>
     <button class="btn" @click="goFavoriteStopView">승차벨 사용 이력</button>
     <button class="btn" @click="goNearStopView">가까운 정류장</button>
+    <button class="btn" @click="goBusDriverPageView">버스 기사 페이지</button>
   </div>
 </template>
 
@@ -27,10 +28,16 @@
         router.push('/nearStop');
       };
 
+      // 버스 기사 페이지로 이동
+      const goBusDriverPageView = () => {
+        router.push({name: 'driverCodeView'});
+      };
+
       return {
         goSearchView,
         goFavoriteStopView,
         goNearStopView,
+        goBusDriverPageView,
       };
     },
   };

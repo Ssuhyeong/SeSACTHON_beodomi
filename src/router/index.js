@@ -2,14 +2,24 @@ import {createRouter, createWebHistory} from 'vue-router';
 
 const routes = [
   {
-    path: '/reservation',
-    name: 'reservationView',
-    component: () => import('@/views/ReservationView'),
-  },
-  {
     path: '/',
     name: 'mainView',
     component: () => import('@/views/passenger/MainView.vue'),
+  },
+  {
+    path: '/driver/code',
+    name: 'driverCodeView',
+    component: () => import('@/views/drivers/DriverCodeView.vue'),
+  },
+  {
+    path: '/driver/main',
+    name: 'driverMainView',
+    component: () => import('@/views/drivers/DriverMainView.vue'),
+  },
+  {
+    path: '/reservation',
+    name: 'reservationView',
+    component: () => import('@/views/ReservationView'),
   },
   {
     path: '/search',
