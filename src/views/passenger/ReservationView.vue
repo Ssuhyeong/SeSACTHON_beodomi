@@ -3,7 +3,7 @@
     <div id="text_container">
       <div id="text_area">{{ voice_text }}</div>
     </div>
-    <VoiceComp @click="test()"/>
+    <VoiceComp @click="voice_result()"/>
     <div id="keyboard_btn">키보드 사용하기</div>
 
     <div class="words" contenteditable>
@@ -24,7 +24,7 @@ export default {
   setup(){
     const voice_text = ref('하차할 정거장을 \n 입력하세요');
 
-    const test = () => {
+    const voice_result = () => {
       window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
       let recognition = new window.webkitSpeechRecognition
@@ -38,16 +38,16 @@ export default {
         let texts = Array.from(e.results).map(results => results[0].transcript).join("");
 
         voice_text.value = texts;
-        console.log(voice_text.value);
+        console.log(voice_text);
+        setTimeout(() => console.log("3초 후에 실행됨"), 3000);
       };
     }
 
     return{
       voice_text,
-      test
+      voice_result
     }
   },
- 
 }
 </script>
 
