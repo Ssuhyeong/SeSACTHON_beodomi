@@ -2,7 +2,7 @@
   <div class="main">
     <button class="btn" @click="goSearchView">버스 노선 검색</button>
     <button class="btn" @click="goFavoriteStopView">승차벨 사용 이력</button>
-    <button class="btn">가까운 정류장</button>
+    <button class="btn" @click="goNearStopView">가까운 정류장</button>
   </div>
 </template>
 
@@ -22,9 +22,15 @@
         router.push('/favoriteStop');
       };
 
+      // 가까운 정류장 페이지로 이동
+      const goNearStopView = () => {
+        router.push('/nearStop');
+      };
+
       return {
         goSearchView,
         goFavoriteStopView,
+        goNearStopView,
       };
     },
   };

@@ -26,6 +26,18 @@ const routes = [
     name: 'favoriteStopView',
     component: () => import('@/views/passenger/FavoriteStopView.vue'),
   },
+  {
+    // 가까운 정류장
+    path: '/nearStop',
+    name: 'nearStopView',
+    component: () => import('@/views/passenger/NearStopView.vue'),
+  },
+  {
+    // 역에서 탈 수 있는 버스 조회 페이지
+    path: '/stopBusList',
+    name: 'stopBusListView',
+    component: () => import('@/views/passenger/StopBusListView.vue'),
+  },
 ];
 
 const router = createRouter({
