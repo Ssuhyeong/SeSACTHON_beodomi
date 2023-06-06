@@ -15,9 +15,10 @@
         type="text"
         placeholder="버스 코드를 입력해주세요"
       />
-      <button @click="goToMainPage" :disabled="driverStore.vehId == ''">
+      <button @click="goToDriverMainPage" :disabled="driverStore.vehId == ''">
         확인
       </button>
+      <button @click="goToMainPage" class="gray-button">뒤로가기</button>
     </main>
   </div>
 </template>
@@ -28,13 +29,16 @@
   export default {
     setup() {
       const driverStore = useDriverStore();
-      async function goToMainPage() {
+      async function goToDriverMainPage() {
         await driverStore.getRouteInfo();
-        router.push({name: 'driverMain'});
+        router.push({name: 'driverMainView'});
       }
-
+      function goToMainPage() {
+        router.push({name: 'mainView'});
+      }
       return {
         driverStore,
+        goToDriverMainPage,
         goToMainPage,
       };
     },
@@ -88,6 +92,11 @@
         transition: 0.3s;
         &:disabled {
           background-color: $gray;
+        }
+        &.gray-button {
+          margin-top: 1rem;
+          background-color: $gray;
+          color: $black;
         }
       }
     }

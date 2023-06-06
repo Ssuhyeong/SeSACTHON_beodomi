@@ -27,7 +27,7 @@
         <h3>다음 정거장</h3>
         <h1>{{ driverStore.nextStationName }}</h1>
       </footer>
-      <router-link class="goToCodePage" :to="{name: 'driverEnter'}"
+      <router-link class="goToCodePage" :to="{name: 'driverCodeView'}"
         >다른 코드 입력하기</router-link
       >
     </div>

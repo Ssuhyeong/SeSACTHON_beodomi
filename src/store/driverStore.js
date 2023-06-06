@@ -64,7 +64,7 @@ export const useDriverStore = defineStore('driver', () => {
     } catch (e) {
       console.log('에러:', e);
       alert('에러가 발생했습니다.');
-      router.push({name: 'driverEnter'});
+      router.push({name: 'driverCodeView'});
     }
   }
 
@@ -80,7 +80,7 @@ export const useDriverStore = defineStore('driver', () => {
         : routeInfo.value[stationIndex.value + 1].stationNm;
       getHelpInfo();
     } else {
-      router.push({name: 'driverEnter'});
+      router.push({name: 'driverCodeView'});
     }
   }
 
