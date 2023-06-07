@@ -1,36 +1,26 @@
 <template>
   <div class="near-stop">
     <div class="scroll">
-      <div
-        v-for="stop in [
-          {name: '상왕십리역', distance: '20m'},
-          {name: '어쩌구역', distance: '80m'},
-          {name: '새싹아파트히힛1', distance: '120m'},
-          {name: '새싹아파트히힛2', distance: '120m'},
-          {name: '새싹아파트히힛3', distance: '120m'},
-          {name: '새싹아파트히힛4', distance: '120m'},
-        ]"
-        :key="stop.name"
-      >
-        <div class="stops" @click="showAvailableBus(stop.name)">
-          <span class="stop-name">{{ stop.name }}</span>
-          <span class="stop-distance">{{ stop.distance }}</span>
-          <img
-            src="@/assets/img/detailBtn.png"
-            alt="역에서 탑승가능한 버스를 보는 버튼"
-            width="31"
-          />
+      <div v-for="stop in stops" :key="stop.arsId">
+        <div id="route_container">
+          <!-- <div class="stops" >
+          <span class="stop-name">{{ stop.stationNm }}</span>
+          <span class="stop-distance">{{ stop.dist }}m</span>
+          <img src="@/assets/img/detailBtn.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
+        </div> -->
+          <div id="route_info" @click="showAvailableBus(stop)">
+            <div style="font-weight: 700">{{ stop.stationNm }}</div>
+            <div>{{ stop.dist }} m</div>
+          </div>
+          <img src="@/assets/img/busIcon.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
         </div>
-        <div class="available-bus" v-if="clickStop === stop.name">
-          <div class="point-icon"></div>
-          <div class="display" @click="goStopBusListView">
-            <span class="title">탑승 가능 버스</span>
-            <div class="buses">
-              <span
-                v-for="bus in [111, 222, 333, 444, 555, 666, 777, 888]"
-                :key="bus"
-                >&nbsp; {{ bus }}
-              </span>
+        <div class="available-bus" v-if="clickStop === stop.arsId">
+          <div class="display" @click="goStopBusListView(stop.arsId, stop.stationId)">
+            <div style="width: 100%">
+              <span class="title">탑승 가능 버스</span>
+              <div class="buses">
+                <span v-for="bus in buses" :key="bus.busRouteId">{{ bus.busRouteNm }} &nbsp;</span>
+              </div>
             </div>
             <img src="@/assets/img/rightArrow.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
           </div>
@@ -62,13 +52,14 @@
         // 사용자 위치 기준으로 가까운 정류장 get
         // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
 
-        // const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${
-        //   process.env.VUE_APP_ROUTE_SERVICE_KEY
-        // }&tmX=${userLng.value}&txY=${userLat.value}&radius=${300}`;
-        // axios
-        //   .get(url)
-        //   .then(res => console.log(res.data))
-        //   .catch(err => console.log(err));
+        const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&tmX=${127.00911}&tmY=${37.56652}&radius=${300}&resultType=json`;
+        axios
+          .get(url)
+          .then(res => {
+            stops.value = res.data.msgBody.itemList;
+            console.log('stops: ', stops.value);
+          })
+          .catch(err => console.log(err));
       };
 
       const locationFail = err => {
