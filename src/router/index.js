@@ -3,6 +3,11 @@ import {createRouter, createWebHistory} from 'vue-router';
 const routes = [
   {
     path: '/',
+    name: 'splashView',
+    component: () => import('@/views/splashView.vue'),
+  },
+  {
+    path: '/main',
     name: 'mainView',
     component: () => import('@/views/passenger/MainView.vue'),
   },
