@@ -7,7 +7,7 @@
         <div :class="['route-type', busType[bus.busRouteType]]"></div>
         <span class="title">{{ bus.busRouteNm }}</span>
         <span>{{ bus.stEnd }}행</span>
-        <span class="time">5분전</span>
+        <span class="time">{{ bus.msg }}</span>
       </div>
     </div>
   </div>
@@ -47,9 +47,41 @@
           buses.value = res.data.msgBody.itemList;
           console.log(buses.value);
 
-          // 해당 버스의
+          // buses 돌면서 buses의 순번을 가져오기
+
+          buses.value.forEach(async (bus, idx) => {
+            const ord = await getOrd(bus);
+            console.log(ord);
+
+            // 가져온 순번으로 api 호출해서 특정 역의 특정 노선 도착 예정 정보 get
+            // buses에 추가하기
+            const prevData = await getPrevData(ord, bus.busRouteId);
+            console.log(prevData);
+            const prevArr = prevData.split('[');
+            if (prevArr.length > 1) {
+              // prevArr = [2분 7초후, 0번째 전] ]
+              buses.value[idx].msg = prevArr[1].slice(0, -1);
+            } else {
+              // prevArr = [곧 도착]
+              buses.value[idx].msg = prevArr[0];
+            }
+          });
         })
         .catch(err => console.log(err));
+
+      // 버스의 순번 가져오기
+      const getOrd = async bus => {
+        const url = `http://localhost:8080/api/pass/ord/${bus.busRouteId}/${arsId}`;
+        const data = await axios.get(url);
+        return data.data;
+      };
+
+      // 특정 정거장에서 특정 노선의 도착 예정 정보 가져오기
+      const getPrevData = async (ord, routeId, idx) => {
+        const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${routeId}&ord=${ord}&stId=${stId}&resultType=json`;
+        const data = await axios.get(url);
+        return data.data.msgBody.itemList[0].arrmsg1;
+      };
 
       return {
         buses,
