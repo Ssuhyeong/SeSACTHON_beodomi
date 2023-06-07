@@ -3,13 +3,11 @@
   <div class="bus-list">
     <h1>상왕십리역</h1>
     <div class="buses">
-      <div
-        class="bus"
-        v-for="bus in [123, 234, 345, 456, 5645437, 678, 789, 890]"
-        :key="bus"
-      >
-        <span class="title">{{ bus }}</span>
-        <span class="time">5분전</span>
+      <div class="bus" v-for="bus in buses" :key="bus.busRouteId">
+        <div :class="['route-type', busType[bus.busRouteType]]"></div>
+        <span class="title">{{ bus.busRouteNm }}</span>
+        <span>{{ bus.stEnd }}행</span>
+        <span class="time">{{ bus.msg }}</span>
       </div>
     </div>
   </div>
@@ -17,20 +15,78 @@
 
 <script>
   import axios from 'axios';
+  import {ref} from 'vue';
   import {useRoute} from 'vue-router';
   export default {
     name: 'StopBusList',
     setup() {
       const route = useRoute();
+      const buses = ref([]);
+      const busType = {
+        1: 'airplane', // 공항
+        2: 'town', // 마을
+        3: 'trunk', // 간선
+        4: 'branch-line', // 지선
+        5: 'cycle', // 순환
+        6: 'wide-area', // 광역
+        7: 'incheon', // 인천
+        8: 'gyeonggi', // 경기
+        9: 'abolition', // 폐지
+        0: 'public', // 공용
+      };
 
-      //TODO: api후 주석 제거하기
-      // const arsId = JSON.parse(route.params.arsId)
-      // const url = `http://ws.bus.go.kr/api/rest/stationinfo/getRouteByStation?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&arsId=${arsId}`;
+      const arsId = route.params.arsId;
+      const stId = route.params.stId;
 
-      // // 특정 정류장에 경우하는 버스 노선 정보 list
-      // axios.get(url)
-      // .then(res=>console.log(res.data))
-      // .catch(err=>console.log(err));
+      const url = `http://ws.bus.go.kr/api/rest/stationinfo/getRouteByStation?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&arsId=${arsId}&resultType=json`;
+
+      // 특정 정류장에 경우하는 버스 노선 정보 list
+      axios
+        .get(url)
+        .then(res => {
+          buses.value = res.data.msgBody.itemList;
+          console.log(buses.value);
+
+          // buses 돌면서 buses의 순번을 가져오기
+
+          buses.value.forEach(async (bus, idx) => {
+            const ord = await getOrd(bus);
+            console.log(ord);
+
+            // 가져온 순번으로 api 호출해서 특정 역의 특정 노선 도착 예정 정보 get
+            // buses에 추가하기
+            const prevData = await getPrevData(ord, bus.busRouteId);
+            console.log(prevData);
+            const prevArr = prevData.split('[');
+            if (prevArr.length > 1) {
+              // prevArr = [2분 7초후, 0번째 전] ]
+              buses.value[idx].msg = prevArr[1].slice(0, -1);
+            } else {
+              // prevArr = [곧 도착]
+              buses.value[idx].msg = prevArr[0];
+            }
+          });
+        })
+        .catch(err => console.log(err));
+
+      // 버스의 순번 가져오기
+      const getOrd = async bus => {
+        const url = `http://localhost:8080/api/pass/ord/${bus.busRouteId}/${arsId}`;
+        const data = await axios.get(url);
+        return data.data;
+      };
+
+      // 특정 정거장에서 특정 노선의 도착 예정 정보 가져오기
+      const getPrevData = async (ord, routeId, idx) => {
+        const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${routeId}&ord=${ord}&stId=${stId}&resultType=json`;
+        const data = await axios.get(url);
+        return data.data.msgBody.itemList[0].arrmsg1;
+      };
+
+      return {
+        buses,
+        busType,
+      };
     },
   };
 </script>
@@ -70,5 +126,66 @@
         }
       }
     }
+  }
+
+  // 버스 노선 타입 css
+  .route-type {
+    display: inline;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background-color: black;
+  }
+
+  // 버스 노선 타입마다 색상 지정
+  // 공항
+  .airplane {
+    background-color: #ff5f63;
+  }
+
+  // 마을
+  .town {
+    background-color: #ff7c25;
+  }
+
+  // 간선
+  .trunk {
+    background-color: #ffdb1d;
+  }
+
+  // 지선
+  .branch-line {
+    background-color: #00df3e;
+  }
+
+  // 순환
+  .cycle {
+    background-color: #03a000;
+  }
+
+  // 광역
+  .wide-area {
+    background-color: #1d92ff;
+  }
+
+  // 인천
+  .incheon {
+    background-color: #1d28ff;
+  }
+
+  // 경기
+  .gyeonggi {
+    background-color: #6c1dff;
+  }
+
+  // 폐지
+  .abolition {
+    background-color: #ff3ef2;
+  }
+
+  // 공용
+  .public {
+    background-color: #777777;
   }
 </style>

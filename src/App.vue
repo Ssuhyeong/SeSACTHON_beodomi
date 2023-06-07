@@ -5,6 +5,10 @@
 </template>
 
 <style lang="scss">
+  body {
+    background: $primary;
+  }
+
   @import url('https://cdn.jsdelivr.net/npm/reset-css@5.0.1/reset.min.css');
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -17,32 +21,30 @@
     }
   }
 
-@font-face {
-  font-family: "KoddiUDOnGothic-Regular";
-  src: url("../src/assets/font/KoddiUDOnGothic-Regular.woff");
-}
+  @font-face {
+    font-family: 'KoddiUDOnGothic-Regular';
+    src: url('../src/assets/font/KoddiUDOnGothic-Regular.woff');
+  }
 
-@font-face {
-  font-family: "KoddiUDOnGothic-Bold";
-  src: url("../src/assets/font/KoddiUDOnGothic-Bold.woff");
-}
+  @font-face {
+    font-family: 'KoddiUDOnGothic-Bold';
+    src: url('../src/assets/font/KoddiUDOnGothic-Bold.woff');
+  }
 
-@font-face {
-  font-family: "KoddiUDOnGothic-ExtraBold";
-  src: url("../src/assets/font/KoddiUDOnGothic-ExtraBold.woff");
-}
+  @font-face {
+    font-family: 'KoddiUDOnGothic-ExtraBold';
+    src: url('../src/assets/font/KoddiUDOnGothic-ExtraBold.woff');
+  }
 
+  * {
+    text-align: center;
+  }
 
-* {
-  text-align: center
-}
+  html {
+    height: 100vh;
+  }
 
-html {
-  height: 100vh;
-}
-
-#app {
-  font-family: "KoddiUDOnGothic-Regular"
-}
-
+  #app {
+    font-family: 'KoddiUDOnGothic-Regular';
+  }
 </style>

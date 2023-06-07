@@ -1,65 +1,64 @@
 <template>
   <div class="bus-search" id="container">
-    <h2 class="title">{{ title }}</h2>
-    <VoiceComp @click="voice_result()"/>
-    <button
-      aria-label="키보드 사용하기 버튼"
-      class="keyboard-btn"
-      @click="goKeyboardSearch"
-    >
-      키보드 사용하기
-    </button>
-
-    <div id="contentDiv" :aria-live="ariaLive" :aria-hidden="ariaHidden">
-      {{ pageContent }}
-    </div>
-    <button
-      aria-label="전체 글을 읽어주는 버튼"
-      class="talk-btn"
-      @click="readWholeText"
-    >
-      음성버튼
-    </button>
+    <ToggleComp style="margin-top: 40px" @getSearchType="getSearchType" />
+    <template v-if="searchType == 'voice'">
+      <h2 class="title">{{ title }}</h2>
+      <VoiceComp @click="voice_result()" style="margin-top: 40px" />
+      <div id="contentDiv" :aria-live="ariaLive" :aria-hidden="ariaHidden">
+        {{ pageContent }}
+      </div>
+    </template>
+    <template v-else>
+      <div class="form-control">
+        <input type="value" required="" placeholder="검색어를 입력하세요" @keyup.enter="search_keyboard" v-model="input" />
+        <img src="@/assets/img/searchBtn.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="32" height="32" style="margin-left: 20px" />
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
-  import { ref } from 'vue';
+  import {ref} from 'vue';
   import VoiceComp from '@/components/VoiceComp.vue';
-  import { useRouter } from 'vue-router';
+  import ToggleComp from '@/components/ToggleComp.vue';
+  import {useRouter} from 'vue-router';
 
   export default {
     name: 'BusSearchView',
     components: {
-      VoiceComp
+      VoiceComp,
+      ToggleComp,
     },
     setup() {
-      const title = ref('버스 노선 혹은 정류장 이름을 입력하세요.');
+      const title = ref('버튼을 누른 후 검색어를 말해주세요');
+      const input = ref('');
+      const searchType = ref('voice');
+      const bg_color = ref('#fff');
       const router = useRouter();
       // 음성 검색
       const voice_result = () => {
-      window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-      let recognition = new window.webkitSpeechRecognition
-      recognition.interimResults = true;
-      recognition.lang = 'ko-KR';
+        let recognition = new window.webkitSpeechRecognition();
+        recognition.interimResults = true;
+        recognition.lang = 'ko-KR';
 
+        recognition.start();
 
-      recognition.start();
+        recognition.onresult = function (e) {
+          let texts = Array.from(e.results)
+            .map(results => results[0].transcript)
+            .join('');
 
-      recognition.onresult = function(e) {
-        let texts = Array.from(e.results).map(results => results[0].transcript).join("");
-
-        title.value = texts;
-        setTimeout(() => 
-        {
-          router.push({
-            name: 'keyboardSearchView',
-            params: { keyword: title.value },
-          })
-        }, 3000);
+          title.value = texts;
+          setTimeout(() => {
+            router.push({
+              name: 'keyboardSearchView',
+              params: {keyword: title.value},
+            });
+          }, 3000);
+        };
       };
-    }
 
       // 전체 읽어주기 기능
       const ariaLive = ref('polite');
@@ -87,22 +86,34 @@
         }, 100);
       };
 
-      // 키보드 사용하기 버튼 클릭 이벤트
-      const goKeyboardSearch = () => {
+      const getSearchType = value => {
+        searchType.value = value;
+        if (searchType.value == 'voice') {
+          bg_color.value = '#fff';
+        } else {
+          bg_color.value = '#082220';
+        }
+      };
+
+      const search_keyboard = () => {
         router.push({
-            name: 'keyboardSearchView',
-            params: { keyword: 'keyboard' },
-          })
+          name: 'keyboardSearchView',
+          params: {keyword: input.value},
+        });
       };
 
       return {
         title,
+        searchType,
+        input,
+        bg_color,
         voice_result,
         ariaLive,
         ariaHidden,
         pageContent,
         readWholeText,
-        goKeyboardSearch,
+        getSearchType,
+        search_keyboard,
       };
     },
   };
@@ -110,23 +121,24 @@
 
 <style lang="scss" scoped>
   .bus-search {
+    height: 100vh;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    height: 100vh;
+    background: v-bind(bg_color);
+    // justify-content: space-between;
 
     .title {
       font-weight: 700;
       font-size: 28px;
       line-height: 34.16px;
-      width: 313px;
-      padding-top: 100px;
+      width: 300px;
+      margin-top: 80px;
     }
 
     .circle {
-      background-color: $gray;
+      background-color: $primary;
       width: 210px;
       height: 210px;
       border-radius: 50%;
@@ -155,8 +167,30 @@
       border-radius: 81px 81px 0 0;
       border: none;
     }
+  }
 
-    .contentDiv {
-    }
+  .form-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 40px 0 40px;
+    width: 340px;
+  }
+  .form-control input {
+    background-color: transparent;
+    border: 0;
+    border-bottom: 2px #fff solid;
+    display: block;
+    width: 100%;
+    padding: 15px 0;
+    font-weight: 700;
+    font-size: 20px;
+    color: #ffffff;
+    text-align: left;
+  }
+  .form-control input:focus,
+  .form-control input:valid {
+    outline: 0;
+    border-bottom-color: #ffdb1d;
   }
 </style>
