@@ -2,35 +2,26 @@
   <div class="near-stop">
     <h1>가까운 정거장</h1>
     <div class="scroll">
-      <div
-        v-for="stop in [
-          {name: '상왕십리역', distance: '20m'},
-          {name: '어쩌구역', distance: '80m'},
-          {name: '새싹아파트히힛1', distance: '120m'},
-          {name: '새싹아파트히힛2', distance: '120m'},
-          {name: '새싹아파트히힛3', distance: '120m'},
-          {name: '새싹아파트히힛4', distance: '120m'},
-        ]"
-        :key="stop.name"
-      >
-        <div class="stops" @click="showAvailableBus(stop.name)">
-          <span class="stop-name">{{ stop.name }}</span>
-          <span class="stop-distance">{{ stop.distance }}</span>
+      <div v-for="stop in stops" :key="stop.arsId">
+        <div class="stops" @click="showAvailableBus(stop)">
+          <span class="stop-name">{{ stop.stationNm }}</span>
+          <span class="stop-distance">{{ stop.dist }}m</span>
           <img
             src="@/assets/img/detailBtn.png"
             alt="역에서 탑승가능한 버스를 보는 버튼"
             width="31"
           />
         </div>
-        <div class="available-bus" v-if="clickStop === stop.name">
+        <div class="available-bus" v-if="clickStop === stop.arsId">
           <div class="point-icon"></div>
-          <div class="display" @click="goStopBusListView">
+          <div
+            class="display"
+            @click="goStopBusListView(stop.arsId, stop.stationId)"
+          >
             <span class="title">탑승 가능 버스</span>
             <div class="buses">
-              <span
-                v-for="bus in [111, 222, 333, 444, 555, 666, 777, 888]"
-                :key="bus"
-                >&nbsp; {{ bus }}
+              <span v-for="bus in buses" :key="bus.busRouteId"
+                >&nbsp; {{ bus.busRouteNm }}
               </span>
             </div>
           </div>
@@ -51,6 +42,8 @@
       const userLat = ref(0);
       const userLng = ref(0);
 
+      const stops = ref({});
+
       // 사용자의 현재 위치 get
       const locationSuccess = pos => {
         userLat.value = pos.coords.latitude;
@@ -58,15 +51,18 @@
         console.log(`현위치: ${userLat.value}, ${userLng.value}`);
 
         // 사용자 위치 기준으로 가까운 정류장 get
-        // TODO: api 승인 후 주석 제거!!
+        // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
 
-        // const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${
-        //   process.env.VUE_APP_ROUTE_SERVICE_KEY
-        // }&tmX=${userLng.value}&txY=${userLat.value}&radius=${300}`;
-        // axios
-        //   .get(url)
-        //   .then(res => console.log(res.data))
-        //   .catch(err => console.log(err));
+        const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${
+          process.env.VUE_APP_ROUTE_SERVICE_KEY
+        }&tmX=${127.00911}&tmY=${37.56652}&radius=${300}&resultType=json`;
+        axios
+          .get(url)
+          .then(res => {
+            stops.value = res.data.msgBody.itemList;
+            console.log('stops: ', stops.value);
+          })
+          .catch(err => console.log(err));
       };
 
       const locationFail = err => {
@@ -75,40 +71,48 @@
 
       navigator.geolocation.getCurrentPosition(locationSuccess, locationFail);
 
-      // 클릭한 역 이름
+      // 클릭한 역 arsId
       const clickStop = ref(null);
 
+      // 클릭한 역을 지나는 버스들
+      const buses = ref({});
+
       // 역의 상세 버튼 클릭 이벤트
-      const showAvailableBus = stopName => {
+      const showAvailableBus = stop => {
         if (clickStop.value !== null) {
           // 클릭 취소
           clickStop.value = null;
         } else {
-          // TODO: api 승인 후 아래 주석 제거
           // 해당 역에서 탑승 가능한 버스 목록 조회
-          // const arsId = stopName에 해당하는 버스 arsId 가져와야대
-          // const url = `http://ws.bus.go.kr/api/rest/stationinfo/getRouteByStation?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&arsId=${arsId}`;
+          const arsId = stop.arsId;
+          const url = `http://ws.bus.go.kr/api/rest/stationinfo/getRouteByStation?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&arsId=${arsId}&resultType=json`;
 
-          // // 특정 정류장에 경우하는 버스 노선 정보 list
-          // axios.get(url)
-          // .then(res=>console.log(res.data))
-          // .catch(err=>console.log(err));
+          // 특정 정류장에 경우하는 버스 노선 정보 list
+          axios
+            .get(url)
+            .then(res => {
+              buses.value = res.data.msgBody.itemList;
+              console.log(buses.value);
+            })
+            .catch(err => console.log(err));
 
-          clickStop.value = stopName;
+          clickStop.value = stop.arsId;
         }
       };
 
       // 해당 역의 경유 버스 보여주는 페이지로 이동
-      const goStopBusListView = () => {
-        //TODO: api 승인 후 arsId 가져와서 파라미터로 넣어주기
+      const goStopBusListView = (arsId, stationId) => {
+        console.log('클릭한 정거장의 arsId: ', arsId, 'stId: ', stationId);
         router.push({
           name: 'stopBusListView',
-          params: {arsId: 1234},
+          params: {arsId: arsId, stId: stationId},
         });
       };
 
       return {
+        stops,
         clickStop,
+        buses,
         showAvailableBus,
         goStopBusListView,
       };
