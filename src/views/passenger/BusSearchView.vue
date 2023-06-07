@@ -116,6 +116,13 @@
         search_keyboard,
       };
     },
+    mounted() {},
+    methods: {
+      readAll() {
+        const text = '과장이 아니란걸 알게됐어';
+        this.passengerStore.announcePageContent(text, this.$refs.voice);
+      },
+    },
   };
 </script>
 
