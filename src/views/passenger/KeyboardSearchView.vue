@@ -1,133 +1,145 @@
 <template>
-  <div class="keyboard-search">
-    <input
-      class="search-input"
-      type="text"
-      required
-      placeholder="검색어를 입력하세요"
-      v-model="keyword"
-      @keyup.enter="station"
-    />
+  <div>
+    <div id="title">'{{ this.$route.params.keyword }}' 검색결과</div>
     <div class="order">
-      <p @click="bus" :class="{ active: search_active[0] }">노선</p>
-      <p @click="station" :class="{ active: search_active[1] }">정류장</p>
+      <p @click="bus" class="bus_text">노 선</p>
+      <p @click="station" class="dist_text">정류장</p>
     </div>
-    <template v-if="search_active[0]">
-      <div class="search-result" v-for="data in search_data" :key="data.route_name"><span>{{ data.route_name }}</span></div>
+    <template v-if="station_color == '#ffdb1d'">
+      <div id="route_container" v-for="data in search_data" :key="data.node_id">
+        <div id="route_info">
+          <div style="font-weight: 700">{{ data.station_name }}</div>
+          <div>{{ (data.distance * 1000).toFixed(0) }} m</div>
+        </div>
+        <img src="@/assets/img/busIcon.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
+      </div>
     </template>
     <template v-else>
-      <div class="search-result" v-for="data in search_data" :key="data.node_id"><span>{{ data.station_name }}</span></div>
+      <div id="route_container" v-for="data in search_data" :key="data.route_name">
+        <div id="route_info">
+          <div style="font-weight: 700">{{ data.route_name }}</div>
+        </div>
+        <div style="color: #fff">자유공원행</div>
+        <img src="@/assets/img/markerIcon.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="20" />
+      </div>
     </template>
   </div>
 </template>
 
 <script>
-import axios from '@/service/axios.js';
+  import axios from '@/service/axios.js';
 
   export default {
     name: 'KeyboardSearchView',
     data() {
       return {
-        keyword: "",
-        search_active : [false, true],
-        search_data: []
-      }
+        keyword: '',
+        route_color: '#fff',
+        station_color: '#ffdb1d',
+        search_data: [],
+      };
     },
     mounted() {
-      if(this.$route.params.keyword != 'keyboard') {
-        this.keyword = this.$route.params.keyword;
-        this.station();
-      }
+      console.log(this.$route.params.keyword);
+      this.keyword = this.$route.params.keyword;
+      this.station();
     },
     methods: {
-    bus() {
-      this.search_active[0] = true;
-      this.search_active[1] = false;
+      bus() {
+        this.route_color = '#ffdb1d';
+        this.station_color = '#fff';
 
-      const keyword = this.keyword;
-      const url = `/api/pass/route/${keyword}`;
+        const keyword = this.keyword;
+        const url = `/api/pass/route/${keyword}`;
 
-      axios
-        .get(url)
-        .then((res) => {
-          console.log(res.data);
-          this.search_data = res.data;
-        })
-        .catch((error) => {
-          console.log("검색 실패" + error.data);
-        });
-    },
-    station() {
-      this.search_active[0] = false;
-      this.search_active[1] = true;
-
-      const keyword = this.keyword;
-      const url = `/api/pass/station/${keyword}`;
-
-      axios
-        .get(url)
-        .then((res) => {
-          console.log(res.data);
-          this.search_data = res.data;
-        })
-        .catch((error) => {
-          console.log("검색 실패" + error.data);
-        });
+        axios
+          .get(url)
+          .then(res => {
+            console.log(res.data);
+            this.search_data = res.data;
+            console.log(res.data);
+          })
+          .catch(error => {
+            console.log('검색 실패' + error.data);
+          });
       },
-    }
-  }
+      station() {
+        this.station_color = '#ffdb1d';
+        this.route_color = '#fff';
+
+        const keyword = this.keyword;
+        const url = `/api/pass/station`;
+        const data = {
+          station_name: '종로',
+          x: 126.9876131,
+          y: 37.56857927,
+        };
+
+        axios
+          .post(url, data)
+          .then(res => {
+            this.search_data = res.data;
+            console.log(res.data);
+          })
+          .catch(error => {
+            console.log('검색 실패' + error.data);
+          });
+      },
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
-  .keyboard-search {
-    padding-top: 100px;
-    .search-input {
-      height: 98px;
-      width: calc(100vw - 52px);
-      border-radius: 10px;
-      background-color: $lightGray;
-      border: none;
-      font-weight: 700;
-      font-size: 28px;
-      line-height: 34.16px;
-      margin-bottom: 31px;
-      text-align: left;
-      padding-left: 20px;
-    }
-
-    .search-result {
-      background-color: $lightGray;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 15px;
-      text-align: center;
-    }
+  #title {
+    margin-top: 40px;
+    color: $secondary;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 24px;
   }
+
+  #route_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin: 10px;
+    border-bottom: solid 0.1px #fff;
+  }
+
+  #route_info > div {
+    text-align: left;
+    color: #fff;
+    margin: 10px;
+  }
+
   .order {
     display: flex;
     align-items: center;
-    justify-content:end;
+    justify-content: center;
+    margin-top: 40px;
     margin-bottom: 20px;
   }
 
-  .order > p {
-    padding: 10px 15px;
-    border-radius: 10px;
-    margin: 0px 5px;
+  .order > .bus_text {
+    padding: 10px 65px;
+    margin: 0px 10px;
     font-weight: 700;
+    border-bottom: solid 2px v-bind(route_color);
+    color: v-bind(route_color);
+  }
+
+  .order > .dist_text {
+    padding: 10px 65px;
+    margin: 0px 10px;
+    font-weight: 700;
+    border-bottom: solid 2px v-bind(station_color);
+    color: v-bind(station_color);
   }
 
   .order > p:hover {
-    background-color: #7C7C7C;
-    color: #fff;
     cursor: pointer;
+    border-bottom: solid 2px $secondary;
+    color: $secondary;
   }
-
-  .active {
-    background-color: #7C7C7C;
-    color: #fff;
-  }
-
 </style>

@@ -9,7 +9,6 @@ const app = createApp(App);
 
 app.use(pinia);
 
-app.use(pinia);
 // 라우터
 app.use(router);
 

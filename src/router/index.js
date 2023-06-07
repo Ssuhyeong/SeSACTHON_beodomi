@@ -67,6 +67,11 @@ const routes = [
     name: 'LandingView',
     component: () => import('@/views/passenger/LandingView.vue'),
   },
+  {
+    path: '/test',
+    name: 'testView',
+    component: () => import('@/views/passenger/testView.vue'),
+  },
 ];
 
 const router = createRouter({
