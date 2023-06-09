@@ -16,9 +16,7 @@ export const useDriverStore = defineStore('driver', () => {
 
   /** 백엔드로부터 이번 정류장에서 탑승/하차 인원 및 도움 요청 수 가져오기 */
   async function getHelpInfo() {
-    const url = `http://localhost:8080/api/driver/${busRouteId.value}/${
-      vehId.value
-    }/${routeInfo.value[stationIndex.value].station}`;
+    const url = `http://localhost:8080/api/driver/${busRouteId.value}/${vehId.value}/${routeInfo.value[stationIndex.value].arsId}`;
     console.log('요청:', url);
     const res = await axios.get(url);
     console.log('결과:', res);
@@ -49,8 +47,7 @@ export const useDriverStore = defineStore('driver', () => {
       $reset();
       loading.value = true;
       console.log(process.env.VUE_APP_ROUTE_SERVICE_KEY);
-      const BASE_URL =
-        'http://ws.bus.go.kr/api/rest/busRouteInfo/getStaionByRoute';
+      const BASE_URL = 'http://ws.bus.go.kr/api/rest/busRouteInfo/getStaionByRoute';
       const url = `${BASE_URL}?ServiceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${busRouteId.value}&resultType=json`;
       console.log('요청URL:', url);
       const res = await axios.get(url);
@@ -71,13 +68,10 @@ export const useDriverStore = defineStore('driver', () => {
   /** 이번 정류장 및 다음 정류장 정보 가져오기 */
   function busStop() {
     if (!isLastIndex.value) {
-      if (++stationIndex.value >= routeInfo.value.length - 1)
-        isLastIndex.value = true;
+      if (++stationIndex.value >= routeInfo.value.length - 1) isLastIndex.value = true;
       console.log(stationIndex.value, routeInfo.value[stationIndex.value]);
       nowStationName.value = routeInfo.value[stationIndex.value].stationNm;
-      nextStationName.value = isLastIndex.value
-        ? '없음'
-        : routeInfo.value[stationIndex.value + 1].stationNm;
+      nextStationName.value = isLastIndex.value ? '없음' : routeInfo.value[stationIndex.value + 1].stationNm;
       getHelpInfo();
     } else {
       router.push({name: 'driverCodeView'});

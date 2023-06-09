@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="main-container">
     <div v-if="driverStore.loading" class="splash">
       <img class="image" src="@/assets/img/beodomiLogo.png" alt="버도미 아이콘" width="103" height="100" />
       <div class="motion-container">
@@ -102,8 +102,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .container {
-    height: 100vh;
+  .main-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -111,6 +110,7 @@
     color: $black;
     background: $white;
     position: relative;
+    flex-grow: 1;
     .splash {
       font-size: 1.8rem;
       word-break: keep-all;

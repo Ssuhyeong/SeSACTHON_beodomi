@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="code-container">
     <input v-model="driverStore.busRouteId" type="text" placeholder="| 노선 코드를 입력해주세요" />
     <input v-model="driverStore.vehId" type="text" placeholder="| 버스 코드를 입력해주세요" />
     <button @click="goToDriverMainPage" :disabled="driverStore.vehId == ''">확인</button>
@@ -32,7 +32,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .container {
+  .code-container {
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -40,7 +40,7 @@
     background: $white;
     border-radius: 1rem 1rem 0 0;
     box-sizing: border-box;
-    flex-grow: 1;
+    width: 100%;
     & > * {
       height: 3rem;
       font-size: 1.3rem;
@@ -54,6 +54,7 @@
       margin-bottom: 1rem;
       padding: 0 1rem;
       text-align: start;
+      box-sizing: border-box;
       &::placeholder {
         color: $darkGray;
       }
