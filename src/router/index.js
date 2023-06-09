@@ -12,14 +12,21 @@ const routes = [
     component: () => import('@/views/passenger/MainView.vue'),
   },
   {
-    path: '/driver/code',
-    name: 'driverCodeView',
-    component: () => import('@/views/drivers/DriverCodeView.vue'),
-  },
-  {
-    path: '/driver/main',
-    name: 'driverMainView',
-    component: () => import('@/views/drivers/DriverMainView.vue'),
+    path: '/driver',
+    name: 'driverView',
+    component: () => import('@/views/drivers/DriverView.vue'),
+    children: [
+      {
+        path: 'code',
+        name: 'driverCodeView',
+        component: () => import('@/views/drivers/DriverCodeView.vue'),
+      },
+      {
+        path: 'main',
+        name: 'driverMainView',
+        component: () => import('@/views/drivers/DriverMainView.vue'),
+      },
+    ],
   },
   {
     path: '/reservation',
