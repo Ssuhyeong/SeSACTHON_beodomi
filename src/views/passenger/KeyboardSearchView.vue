@@ -1,5 +1,6 @@
 <template>
   <div>
+    <NavComp :content="wholeText" title="버스 노선 검색" />
     <div id="title">'{{ this.$route.params.keyword }}' 검색결과</div>
     <div class="order">
       <p @click="bus" class="bus_text">노 선</p>
@@ -28,20 +29,24 @@
 
 <script>
   import axios from '@/service/axios.js';
+  import NavComp from '@/components/NavComp.vue';
 
   export default {
     name: 'KeyboardSearchView',
+    components: {NavComp},
     data() {
       return {
         keyword: '',
         route_color: '#fff',
         station_color: '#ffdb1d',
         search_data: [],
+        wholeText: '',
       };
     },
     mounted() {
       console.log(this.$route.params.keyword);
       this.keyword = this.$route.params.keyword;
+      this.wholeText = `${this.$route.params.keyword} 검색 결과`;
       this.station();
     },
     methods: {

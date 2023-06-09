@@ -1,17 +1,19 @@
 <template>
-  <div class="favorite-stop">
-    <div class="none-favorite" v-if="false">
-      <h1>사용한 승차벨 &nbsp; 이력이 없습니다.</h1>
-      <button class="search-btn" @click="goBusSearchView">
-        <span class="text">정류장 검색하기</span>
-        <span class="icon">&gt;</span>
-      </button>
-    </div>
-    <div class="favorite" v-else>
-      <h1>승차벨 사용 정류장</h1>
-      <div class="stops">
-        <div class="stop" v-for="i in [1, 2, 3, 4, 5, 6, 7]" :key="i">
-          {{ i }}
+  <div>
+    <NavComp :content="wholeText" title="승차벨 사용 이력" />
+
+    <div class="favorite-stop">
+      <div class="none-favorite" v-if="true">
+        <h1>이력이 없습니다.</h1>
+        <button class="search-btn" @click="goBusSearchView">
+          <span class="text">버스 노선 검색</span>
+        </button>
+      </div>
+      <div class="favorite" v-else>
+        <div class="stops">
+          <div class="stop" v-for="i in [1, 2, 3, 4, 5, 6, 7]" :key="i">
+            {{ i }}
+          </div>
         </div>
       </div>
     </div>
@@ -20,8 +22,12 @@
 
 <script>
   import {useRouter} from 'vue-router';
+  import NavComp from '@/components/NavComp.vue';
+  import {ref} from 'vue';
+
   export default {
     name: 'FavoriteStopView',
+    components: {NavComp},
     setup() {
       const router = useRouter();
 
@@ -30,8 +36,17 @@
         router.push('/search');
       };
 
+      // TODO: 승차벨 사용 이력 받아오면 if문으로 지정
+      const wholeText = ref('');
+      // 승차벨 사용 이력이 없는 경우
+      // wholeText.value = '승차벨 사용 이력이 없습니다. 버스 노선 검색 버튼';
+
+      // 승차벨 사용 이력이 있는 경우
+      wholeText.value = '승차벨 사용 이력이 있습니다. 사용 이력 목록 조회';
+
       return {
         goBusSearchView,
+        wholeText,
       };
     },
   };
@@ -47,9 +62,7 @@
     margin-top: 50%;
 
     h1 {
-      display: flex;
-      align-items: center;
-
+      color: $white;
       width: 249px;
       font-weight: 700;
       font-size: 30px;
@@ -59,19 +72,19 @@
 
     // 정류장 검색 버튼
     .search-btn {
-      height: 106px;
-      background-color: $lightGray;
+      height: 140px;
+      background-color: $secondary;
       display: flex;
       justify-content: space-around;
       align-items: center;
       width: calc(100vw - 32px);
-      border-radius: 10px;
+      border-radius: 20px;
       border: none;
 
       .text {
         font-weight: 700;
-        font-size: 28px;
-        line-height: 34.16px;
+        font-size: 36px;
+        line-height: 22px;
       }
 
       .icon {
@@ -84,18 +97,11 @@
   // 사용한 승차벨 이력이 있는 경우
   .favorite {
     text-align: center;
-    margin-top: 105px;
+    margin-top: 32px;
     padding: 0px 16px;
 
-    h1 {
-      font-weight: 700;
-      font-size: 30px;
-      line-height: 48px;
-      margin-bottom: 31px;
-    }
-
     .stops {
-      height: calc(122px * 5);
+      height: calc(122px * 6);
       overflow: auto;
 
       .stop {

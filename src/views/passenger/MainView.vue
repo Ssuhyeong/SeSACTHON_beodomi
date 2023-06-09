@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavComp :content="wholeText" />
+    <NavComp :content="wholeText" pageName="main" />
 
     <div class="main">
       <button class="btn" @click="goSearchView">버스 노선 검색</button>

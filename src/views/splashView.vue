@@ -5,8 +5,8 @@
     <div v-if="!isLoading" class="container">
       <img src="@/assets/img/beodomiText.png" alt="버도미" width="120" />
 
-      <button class="passenger" @click="passenger">승객</button>
-      <button class="driver" @click="driver">버스 기사</button>
+      <button @click="goToPassengerPage" class="passenger">승객</button>
+      <button @click="goToDriverPage" class="driver">버스 기사</button>
     </div>
   </div>
 </template>
@@ -14,7 +14,7 @@
 <script>
   import SplashComp from '@/components/SplashComp.vue';
   import {onMounted, ref} from 'vue';
-  import {useRouter} from 'vue-router';
+  import router from '@/router';
 
   export default {
     name: 'splashView',
@@ -22,7 +22,6 @@
       SplashComp,
     },
     setup() {
-      const router = useRouter();
       const isLoading = ref(true);
 
       onMounted(() => {
@@ -31,20 +30,17 @@
         }, 1000);
       });
 
-      // 승객 버튼 클릭 이벤트
-      const passenger = () => {
-        router.push('/main');
-      };
-
-      // 버스기사 버튼 클릭 이벤트
-      const driver = () => {
-        router.push('/driver/code');
-      };
+      function goToPassengerPage() {
+        router.push({name: 'mainView'});
+      }
+      function goToDriverPage() {
+        router.push({name: 'driverCodeView'});
+      }
 
       return {
         isLoading,
-        passenger,
-        driver,
+        goToDriverPage,
+        goToPassengerPage,
       };
     },
   };
