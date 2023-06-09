@@ -6,9 +6,9 @@
       <p @click="bus" class="bus_text">노 선</p>
       <p @click="station" class="dist_text">정류장</p>
     </div>
-    <template v-if="station_color == '#ffdb1d'">
-      <div class="near-stop">
-        <div class="scroll">
+    <div class="near-stop">
+      <div class="scroll">
+        <template v-if="station_color == '#ffdb1d'">
           <div v-for="stop in keyword_stops" :key="stop.arsId">
             <div id="route_container">
               <div id="route_info" @click="showAvailableBus(stop)">
@@ -29,17 +29,17 @@
               </div>
             </div>
           </div>
-        </div>
+        </template>
+        <template v-else>
+          <div id="route_container" v-for="data in search_data" :key="data.route_name" @click="goStationListView(data.bus_route_id)">
+            <div id="route_info">
+              <div style="font-weight: 700">{{ data.route_name }}</div>
+            </div>
+            <img src="@/assets/img/markerIcon.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="20" />
+          </div>
+        </template>
       </div>
-    </template>
-    <template v-else>
-      <div id="route_container" v-for="data in search_data" :key="data.route_name" @click="goStationListView(data.bus_route_id)">
-        <div id="route_info">
-          <div style="font-weight: 700">{{ data.route_name }}</div>
-        </div>
-        <img src="@/assets/img/markerIcon.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="20" />
-      </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -221,7 +221,7 @@
     }
 
     .scroll {
-      max-height: 100vh;
+      max-height: 70vh;
       overflow: scroll;
     }
 

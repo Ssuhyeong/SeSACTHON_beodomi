@@ -1,26 +1,29 @@
 <template>
   <!-- 역에서 탈 수 있는 버스 목록 조회 페이지 -->
-  <div class="bus-list">
-    <h1>상왕십리역</h1>
-    <div class="buses">
-      <!-- <div class="bus" v-for="bus in buses" :key="bus.busRouteId">
+  <div>
+    <NavComp :content="wholeText" title="탑승 가능 버스" />
+    <div class="bus-list">
+      <h1>상왕십리역</h1>
+      <div class="buses">
+        <!-- <div class="bus" v-for="bus in buses" :key="bus.busRouteId">
         <div :class="['route-type', busType[bus.busRouteType]]"></div>
         <span class="title">{{ bus.busRouteNm }}</span>
         <span>{{ bus.stEnd }}행</span>
         <span class="time">{{ bus.msg }}</span>
       </div> -->
-      <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus.busRouteId)]">
-        <div :class="['route-type', busType[bus.busRouteType]]"></div>
-        <div id="route_info">
-          <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
+        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus.busRouteId)]">
+          <div :class="['route-type', busType[bus.busRouteType]]"></div>
+          <div id="route_info">
+            <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
+          </div>
+          <div style="color: #fff; width: 100px">{{ bus.stEnd }}행</div>
+          <span class="time">{{ bus.msg }}</span>
+          <div id="riding" :class="{active: bus_active[idx]}"></div>
         </div>
-        <div style="color: #fff; width: 100px">{{ bus.stEnd }}행</div>
-        <span class="time">{{ bus.msg }}</span>
-        <div id="riding" :class="{active: bus_active[idx]}"></div>
       </div>
+      <div v-if="bus_select == ''" id="ridingBtn">승차 예약</div>
+      <div v-else id="ridingActiveBtn" @click="ridingReserve(bus_select)">승차 예약</div>
     </div>
-    <div v-if="bus_select == ''" id="ridingBtn">승차 예약</div>
-    <div v-else id="ridingActiveBtn" @click="ridingReserve(bus_select)">승차 예약</div>
   </div>
 </template>
 
@@ -29,9 +32,11 @@
   import {ref} from 'vue';
   import {useRoute} from 'vue-router';
   import router from '@/router';
+  import NavComp from '@/components/NavComp.vue';
 
   export default {
     name: 'StopBusList',
+    components: {NavComp},
     data() {
       return {
         bus_active: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
@@ -54,6 +59,7 @@
         0: 'public', // 공용
       };
 
+      const title = ref('');
       const arsId = route.params.arsId;
       const stId = route.params.stId;
 
@@ -99,6 +105,9 @@
       const getPrevData = async (ord, routeId, idx) => {
         const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${routeId}&ord=${ord}&stId=${stId}&resultType=json`;
         const data = await axios.get(url);
+        const res = await data.data;
+        console.log('res', res);
+        title.value = data.data.msgBody.itemList[0].stNm;
         return data.data.msgBody.itemList[0].arrmsg1;
       };
 
@@ -109,10 +118,15 @@
         });
       };
 
+      // 읽어줄 전체 text
+      const wholeText = `${title.value}에서 탑승 가능한 버스 노선 목록. 승차 예약 버튼`;
+
       return {
+        title,
         buses,
         busType,
         ridingReserve,
+        wholeText,
       };
     },
     methods: {
@@ -136,22 +150,36 @@
   #ridingBtn {
     font-weight: 900;
     font-size: 32px;
-    padding: 58px 94px;
     background-color: #fff;
     border-radius: 20px;
-    margin-top: 5px;
     color: $primary;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    width: calc(100% - 32px);
+    transform: translate(-50%, -40px);
   }
 
   #ridingActiveBtn {
     font-weight: 900;
     font-size: 32px;
-    padding: 58px 94px;
     background-color: #ff5f63;
     border-radius: 20px;
-    margin-top: 5px;
     color: #fff;
     cursor: pointer;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    width: calc(100% - 32px);
+    transform: translate(-50%, -40px);
   }
 
   #route_container {
@@ -175,8 +203,8 @@
     h1 {
       font-size: 30px;
       line-height: 36.6px;
-      margin-top: 97px;
-      margin-bottom: 35px;
+      margin-top: 40px;
+      margin-bottom: 40px;
       font-weight: 700;
       color: $secondary;
     }
