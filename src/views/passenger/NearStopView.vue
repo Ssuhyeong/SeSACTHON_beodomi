@@ -1,28 +1,32 @@
 <template>
-  <div class="near-stop">
-    <div class="scroll">
-      <div v-for="stop in stops" :key="stop.arsId">
-        <div id="route_container">
-          <!-- <div class="stops" >
+  <div>
+    <NavComp :content="wholeText" title="가까운 정류장" />
+
+    <div class="near-stop">
+      <div class="scroll">
+        <div v-for="stop in stops" :key="stop.arsId">
+          <div id="route_container">
+            <!-- <div class="stops" >
           <span class="stop-name">{{ stop.stationNm }}</span>
           <span class="stop-distance">{{ stop.dist }}m</span>
           <img src="@/assets/img/detailBtn.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
         </div> -->
-          <div id="route_info" @click="showAvailableBus(stop)">
-            <div style="font-weight: 700">{{ stop.stationNm }}</div>
-            <div>{{ stop.dist }} m</div>
-          </div>
-          <img src="@/assets/img/busIcon.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
-        </div>
-        <div class="available-bus" v-if="clickStop === stop.arsId">
-          <div class="display" @click="goStopBusListView(stop.arsId, stop.stationId)">
-            <div style="width: 100%">
-              <span class="title">탑승 가능 버스</span>
-              <div class="buses">
-                <span v-for="bus in buses" :key="bus.busRouteId">{{ bus.busRouteNm }} &nbsp;</span>
-              </div>
+            <div id="route_info" @click="showAvailableBus(stop)">
+              <div style="font-weight: 700">{{ stop.stationNm }}</div>
+              <div>{{ stop.dist }} m</div>
             </div>
-            <img src="@/assets/img/rightArrow.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
+            <img src="@/assets/img/busIcon.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
+          </div>
+          <div class="available-bus" v-if="clickStop === stop.arsId">
+            <div class="display" @click="goStopBusListView(stop.arsId, stop.stationId)">
+              <div style="width: 100%">
+                <span class="title">탑승 가능 버스</span>
+                <div class="buses">
+                  <span v-for="bus in buses" :key="bus.busRouteId">{{ bus.busRouteNm }} &nbsp;</span>
+                </div>
+              </div>
+              <img src="@/assets/img/rightArrow.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="31" />
+            </div>
           </div>
         </div>
       </div>
@@ -34,9 +38,11 @@
   import router from '@/router';
   import {ref} from 'vue';
   import axios from 'axios';
+  import NavComp from '@/components/NavComp.vue';
 
   export default {
     name: 'testView',
+    components: {NavComp},
     setup() {
       const userLat = ref(0);
       const userLng = ref(0);
@@ -106,12 +112,16 @@
         });
       };
 
+      // 읽을 전체 text
+      const wholeText = '가까운 정류장 목록입니다.';
+
       return {
         stops,
         clickStop,
         buses,
         showAvailableBus,
         goStopBusListView,
+        wholeText,
       };
     },
   };
