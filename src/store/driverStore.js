@@ -69,6 +69,12 @@ export const useDriverStore = defineStore('driver', () => {
   function busStop() {
     if (!isLastIndex.value) {
       if (++stationIndex.value >= routeInfo.value.length - 1) isLastIndex.value = true;
+      console.log('현재: ', routeInfo.value[stationIndex.value]);
+      while (routeInfo.value[stationIndex.value].arsId == ' ') {
+        if (++stationIndex.value >= routeInfo.value.length - 1) {
+          isLastIndex.value = true;
+        }
+      }
       console.log(stationIndex.value, routeInfo.value[stationIndex.value]);
       nowStationName.value = routeInfo.value[stationIndex.value].stationNm;
       nextStationName.value = isLastIndex.value ? '없음' : routeInfo.value[stationIndex.value + 1].stationNm;
