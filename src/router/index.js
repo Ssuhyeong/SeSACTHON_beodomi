@@ -63,7 +63,7 @@ const routes = [
   },
   {
     // 승차벨 페이지
-    path: '/riding',
+    path: '/riding/:arsId/:busRouteId',
     name: 'RidingView',
     component: () => import('@/views/passenger/RidingView.vue'),
   },
@@ -80,9 +80,9 @@ const routes = [
     component: () => import('@/views/passenger/LandingView.vue'),
   },
   {
-    path: '/test',
-    name: 'testView',
-    component: () => import('@/views/passenger/testView.vue'),
+    path: '/stationList/:busRouteId',
+    name: 'StationListView',
+    component: () => import('@/views/passenger/StationListView.vue'),
   },
 ];
 
