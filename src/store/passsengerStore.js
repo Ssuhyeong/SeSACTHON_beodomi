@@ -11,12 +11,9 @@ export const usePassengerStore = defineStore('passenger', () => {
    */
   function announcePageContent(content, htmlElement) {
     htmlElement.setAttribute('aria-live', 'assertive');
-    htmlElement.innerText = content;
-    console.log(content);
 
     setTimeout(function () {
-      htmlElement.removeAttribute(htmlElement);
-      htmlElement.innerText('');
+      htmlElement.removeAttribute('aria-live');
     }, 100);
   }
   return {
