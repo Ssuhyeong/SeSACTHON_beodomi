@@ -3,13 +3,24 @@
   <div class="bus-list">
     <h1>상왕십리역</h1>
     <div class="buses">
-      <div class="bus" v-for="bus in buses" :key="bus.busRouteId">
+      <!-- <div class="bus" v-for="bus in buses" :key="bus.busRouteId">
         <div :class="['route-type', busType[bus.busRouteType]]"></div>
         <span class="title">{{ bus.busRouteNm }}</span>
         <span>{{ bus.stEnd }}행</span>
         <span class="time">{{ bus.msg }}</span>
+      </div> -->
+      <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus.busRouteId)]">
+        <div :class="['route-type', busType[bus.busRouteType]]"></div>
+        <div id="route_info">
+          <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
+        </div>
+        <div style="color: #fff; width: 100px">{{ bus.stEnd }}행</div>
+        <span class="time">{{ bus.msg }}</span>
+        <div id="riding" :class="{active: bus_active[idx]}"></div>
       </div>
     </div>
+    <div v-if="bus_select == ''" id="ridingBtn">승차 예약</div>
+    <div v-else id="ridingActiveBtn" @click="ridingReserve(bus_select)">승차 예약</div>
   </div>
 </template>
 
@@ -17,8 +28,16 @@
   import axios from 'axios';
   import {ref} from 'vue';
   import {useRoute} from 'vue-router';
+  import router from '@/router';
+
   export default {
     name: 'StopBusList',
+    data() {
+      return {
+        bus_active: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        bus_select: '',
+      };
+    },
     setup() {
       const route = useRoute();
       const buses = ref([]);
@@ -83,15 +102,72 @@
         return data.data.msgBody.itemList[0].arrmsg1;
       };
 
+      const ridingReserve = busRouteId => {
+        router.push({
+          name: 'RidingView',
+          params: {arsId: route.params.arsId, busRouteId: busRouteId},
+        });
+      };
+
       return {
         buses,
         busType,
+        ridingReserve,
       };
+    },
+    methods: {
+      select(idx) {
+        if (this.bus_active[idx]) {
+          console.log('none');
+        } else {
+          for (let i = 0; i < this.bus_active.length; i++) {
+            if (i != idx) {
+              this.bus_active[i] = this.bus_active[idx];
+            }
+          }
+          this.bus_active[idx] = !this.bus_active[idx];
+        }
+      },
     },
   };
 </script>
 
 <style lang="scss" scoped>
+  #ridingBtn {
+    font-weight: 900;
+    font-size: 32px;
+    padding: 58px 94px;
+    background-color: #fff;
+    border-radius: 20px;
+    margin-top: 5px;
+    color: $primary;
+  }
+
+  #ridingActiveBtn {
+    font-weight: 900;
+    font-size: 32px;
+    padding: 58px 94px;
+    background-color: #ff5f63;
+    border-radius: 20px;
+    margin-top: 5px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  #route_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin: 10px;
+    border-bottom: solid 0.1px #fff;
+  }
+
+  #route_info > div {
+    text-align: left;
+    color: #fff;
+    margin: 10px;
+  }
   .bus-list {
     text-align: center;
     margin: 0px 16px;
@@ -102,10 +178,11 @@
       margin-top: 97px;
       margin-bottom: 35px;
       font-weight: 700;
+      color: $secondary;
     }
 
     .buses {
-      max-height: 70vh;
+      max-height: 50vh;
       overflow: auto;
 
       .bus {
@@ -126,6 +203,29 @@
         }
       }
     }
+  }
+
+  #riding {
+    color: #ffdb1d;
+    border: 2px solid #ffdb1d;
+    padding: 15px 15px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  #riding:hover {
+    color: #fff;
+    background-color: #ffdb1d;
+  }
+
+  .active {
+    background-color: #ffdb1d;
+  }
+
+  .time {
+    color: $secondary;
+    width: 70px;
   }
 
   // 버스 노선 타입 css
