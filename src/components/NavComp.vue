@@ -14,6 +14,7 @@
     <img
       @click="readWholeText"
       class="wholeBtn"
+      v-if="!driver"
       :src="theme === 'dark' ? require('@/assets/img/wholeTextIcon.png') : require('@/assets/img/wholeTextIconYellow.png')"
       alt="전체 읽어주는 버튼"
       height="20"
@@ -54,6 +55,10 @@
       theme: {
         type: String,
         default: 'dark',
+      },
+      driver: {
+        type: Boolean,
+        default: false,
       },
     },
     setup(props) {
