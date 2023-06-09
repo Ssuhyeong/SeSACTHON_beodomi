@@ -49,7 +49,6 @@
   import {ref} from 'vue';
   import {useRoute} from 'vue-router';
   import NavComp from '@/components/NavComp.vue';
-  NavComp;
 
   export default {
     name: 'KeyboardSearchView',
