@@ -122,10 +122,6 @@
     text-align: center;
     margin: 0px 16px;
 
-    h1 {
-      font-weight: 700;
-    }
-
     .scroll {
       max-height: 100vh;
       overflow: scroll;
@@ -134,6 +130,7 @@
     h1 {
       font-size: 30px;
       line-height: 36.6px;
+      font-weight: 700;
       margin-top: 97px;
       margin-bottom: 35px;
     }
