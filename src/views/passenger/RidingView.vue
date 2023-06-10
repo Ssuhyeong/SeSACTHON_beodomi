@@ -4,13 +4,13 @@
     <main>
       <article class="information">
         <h3>승차 정류장</h3>
-        <h1>왕십리역 6-1번출구</h1>
+        <h1>{{ passengerStore.startStation.stationNm }}</h1>
       </article>
       <article class="information">
         <h3>승차 버스</h3>
-        <h1>501 새싹행</h1>
+        <h1>{{ passengerStore.startStation.busRouteNm }} {{ passengerStore.startStation.direction }}행</h1>
       </article>
-      <article class="remain">5 정거장 전</article>
+      <article class="remain">{{ remain }} 정거장 전</article>
       <button class="help-button">승차 도움 요청</button>
       <button class="book-button">예약 취소/변경</button>
     </main>
@@ -19,21 +19,52 @@
 
 <script>
   import NavCompVue from '@/components/NavComp.vue';
-  import {ref} from 'vue';
+  import {ref, watch} from 'vue';
   import {usePassengerStore} from '@/store/passsengerStore';
+  import {useDriverStore} from '@/store/driverStore';
+  import router from '@/router';
 
   export default {
     components: {
       NavCompVue,
     },
+    watch: {
+      'passengerStore.startStation.seq'(newValue, oldValue) {
+        console.log('바뀜: ', newValue);
+        this.remain = newValue - this.driverStore.stationIndex;
+      },
+    },
     setup() {
       const passengerStore = usePassengerStore();
-      console.log(passengerStore.busData);
-      // 버스 도착 여부
-      const isBusArrive = ref(false);
+      const driverStore = useDriverStore();
+
+      const isBusArrive = ref(false); // 버스 도착 여부
+      const remain = ref(passengerStore.startStation.seq - driverStore.stationIndex); // 버스가 도착하기까지 남은 정류장 수
+      watch(
+        () => passengerStore.startStation.seq,
+        (newValue, oldValue) => {
+          console.log('바뀜: ', newValue);
+          remain.value = newValue - driverStore.stationIndex;
+        },
+      );
+      watch(
+        () => remain.value,
+        (newValue, oldValue) => {
+          if (newValue == 0) {
+            router.push({name: 'RidingAlarmView'});
+          }
+        },
+      );
+
+      function getRemainStation() {
+        const busOrd = driverStore.stationIndex; // 버스의 현재 위치
+        const stOrd = passengerStore.startStation.seq;
+      }
+
       return {
         isBusArrive,
         passengerStore,
+        remain,
       };
     },
   };

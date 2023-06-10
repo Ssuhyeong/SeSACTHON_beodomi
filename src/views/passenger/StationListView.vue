@@ -28,6 +28,7 @@
   import {useRoute} from 'vue-router';
   import router from '@/router';
   import NavComp from '@/components/NavComp.vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
 
   export default {
     name: 'testView',
@@ -76,7 +77,9 @@
 
       navigator.geolocation.getCurrentPosition(locationSuccess, locationFail);
 
+      const passengerStore = usePassengerStore();
       const ridingReserve = busData => {
+        console.log('버스 데이터:', busData);
         if (localStorage.getItem('history') == null) {
           const history = [];
 
@@ -88,9 +91,10 @@
           localStorage.setItem('history', JSON.stringify(newHistory));
         }
 
+        passengerStore.startStation = busData;
+
         router.push({
           name: 'RidingView',
-          params: {busData: JSON.stringify(busData)},
         });
       };
 

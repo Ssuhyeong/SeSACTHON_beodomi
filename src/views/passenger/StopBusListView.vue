@@ -110,12 +110,6 @@
 
       const passengerStore = usePassengerStore();
       const ridingReserve = busData => {
-<<<<<<< HEAD
-        console.log('넘겨주는쪽:', busData);
-        passengerStore.busData = busData;
-        router.push({
-          name: 'RidingView',
-=======
         if (localStorage.getItem('history') == null) {
           const history = [];
 
@@ -127,10 +121,10 @@
           localStorage.setItem('history', JSON.stringify(newHistory));
         }
 
+        console.log('버스 데이터:', busData);
+        passengerStore.startStation = busData;
         router.push({
           name: 'RidingView',
-          params: {busData: JSON.stringify(busData)},
->>>>>>> 487b027a26859f2ea890920b0830b9cb09b933e0
         });
       };
 
