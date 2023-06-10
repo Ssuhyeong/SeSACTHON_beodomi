@@ -21,7 +21,6 @@
   import NavCompVue from '@/components/NavComp.vue';
   import {onUnmounted, ref} from 'vue';
   import {usePassengerStore} from '@/store/passsengerStore';
-  import {useDriverStore} from '@/store/driverStore';
   import router from '@/router';
 
   export default {
@@ -30,27 +29,30 @@
     },
     setup() {
       const passengerStore = usePassengerStore();
-      const driverStore = useDriverStore();
 
       // 시작 - 버스 현재 위치 갱신하기
-      const remain = ref(passengerStore.startStation.seq - driverStore.stationIndex - 1); // 버스가 도착하기까지 남은 정류장 수
+      const remain = ref(0); // 버스가 도착하기까지 남은 정류장 수
       const remainTime = setInterval(() => {
         const busOrder = JSON.parse(localStorage.getItem('driver')).stationIndex;
         remain.value = passengerStore.startStation.seq - busOrder - 1;
-        // if (remain.value === 0) {
-        //   router.push({name: 'RidingAlarmView'});
-        // }
+        if (remain.value === 0) {
+          router.push({name: 'RidingAlarmView'});
+        }
       }, 1000);
       // 끝 - 버스 현재 위치 갱신하기
 
       // 시작 - 승차 도움 요청
+      /** 승차 도움 요청/취소 */
       function helpRequestToggle() {
         passengerStore.needHelp = !passengerStore.needHelp;
         passengerStore.helpRequestToggle();
       }
       // 끝 - 승차 도움 요청
 
+      /** 예약 취소 / 변경 */
       function goToListPage() {
+        passengerStore.needHelp = false;
+        passengerStore.helpRequestToggle();
         router.go(-1);
       }
 

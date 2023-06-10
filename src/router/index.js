@@ -29,11 +29,6 @@ const routes = [
     ],
   },
   {
-    path: '/reservation',
-    name: 'reservationView',
-    component: () => import('@/views/passenger/ReservationView'),
-  },
-  {
     path: '/search',
     name: 'busSearchView',
     component: () => import('@/views/passenger/BusSearchView.vue'),
