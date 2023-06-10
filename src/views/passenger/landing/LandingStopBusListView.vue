@@ -5,7 +5,7 @@
     <div class="bus-list">
       <h1>{{ title }}</h1>
       <div class="buses">
-        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), getBusData(bus.busRouteId, idx)]">
+        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus.busRouteId)]">
           <div :class="['route-type', busType[bus.busRouteType]]"></div>
           <div id="route_info">
             <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
@@ -15,8 +15,8 @@
           <div id="riding" :class="{active: bus_active[idx]}"></div>
         </div>
       </div>
-      <div v-if="bus_select == ''" id="ridingBtn">승차 예약</div>
-      <div v-else id="ridingActiveBtn" @click="ridingReserve(bus_select)">승차 예약</div>
+      <div v-if="bus_select == ''" id="ridingBtn">하차 예약</div>
+      <div v-else id="ridingActiveBtn" @click="landingReserve(bus_select)">하차 예약</div>
     </div>
   </div>
 </template>
@@ -107,21 +107,9 @@
         return res.msgBody.itemList[0].arrmsg1;
       };
 
-      const ridingReserve = busData => {
-        if (localStorage.getItem('history') == null) {
-          const history = [];
-
-          history.push(busData);
-          localStorage.setItem('history', JSON.stringify(history));
-        } else {
-          var newHistory = JSON.parse(localStorage.getItem('history'));
-          newHistory.push(busData);
-          localStorage.setItem('history', JSON.stringify(newHistory));
-        }
-
+      const landingReserve = busData => {
         router.push({
-          name: 'RidingView',
-          params: {busData: JSON.stringify(busData)},
+          name: 'LandingView',
         });
       };
 
@@ -132,7 +120,7 @@
         title,
         buses,
         busType,
-        ridingReserve,
+        landingReserve,
         wholeText,
       };
     },
@@ -148,18 +136,6 @@
           }
           this.bus_active[idx] = !this.bus_active[idx];
         }
-      },
-      getBusData(busRouteId, idx) {
-        // 사용자 위치 기준으로 가까운 정류장 get
-        // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
-
-        const url = `http://ws.bus.go.kr/api/rest/busRouteInfo/getStaionByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${busRouteId}&resultType=json`;
-        axios
-          .get(url)
-          .then(res => {
-            this.bus_select = res.data.msgBody.itemList[idx];
-          })
-          .catch(err => console.log(err));
       },
     },
   };
