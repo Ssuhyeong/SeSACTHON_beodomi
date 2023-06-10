@@ -110,6 +110,17 @@
 
       const passengerStore = usePassengerStore();
       const landingReserve = busData => {
+        console.log(busData);
+
+        const dbData = {
+          bus_route_id: busData.busRouteId,
+          origin_station: passengerStore.startStation.arsId,
+          destination_station: busData.arsId,
+        };
+        // console.log(dbData);
+
+        axios.put('http://localhost:8080/api/pass/destination', dbData).then(() => {});
+
         passengerStore.endStation = busData;
         router.push({
           name: 'LandingView',

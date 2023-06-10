@@ -93,6 +93,13 @@
 
         passengerStore.startStation = busData;
 
+        const dbData = {
+          bus_route_id: busData.busRouteId,
+          origin_station: busData.arsId,
+        };
+
+        axios.post('http://localhost:8080/api/pass', dbData).then(() => {});
+
         router.push({
           name: 'RidingView',
         });
