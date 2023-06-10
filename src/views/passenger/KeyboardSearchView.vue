@@ -10,8 +10,8 @@
       <div class="scroll">
         <template v-if="station_color == '#ffdb1d'">
           <div v-for="stop in keyword_stops" :key="stop.arsId">
-            <div id="route_container">
-              <div id="route_info" @click="showAvailableBus(stop)">
+            <div id="route_container" @click="showAvailableBus(stop)">
+              <div id="route_info">
                 <div style="font-weight: 700">{{ stop.stationNm }}</div>
                 <div>{{ stop.dist }} m</div>
               </div>
@@ -110,7 +110,7 @@
 
       // 역의 상세 버튼 클릭 이벤트
       const showAvailableBus = stop => {
-        if (clickStop.value !== null) {
+        if (clickStop.value === stop.arsId) {
           // 클릭 취소
           clickStop.value = null;
         } else {

@@ -133,7 +133,7 @@
     margin: 0px 16px;
 
     .scroll {
-      max-height: 100vh;
+      max-height: calc(100vh - 94px);
       overflow: scroll;
     }
 
