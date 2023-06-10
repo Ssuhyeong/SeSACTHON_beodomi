@@ -1,20 +1,24 @@
 <template>
   <!-- 역에서 탈 수 있는 버스 목록 조회 페이지 -->
-  <div class="bus-list">
-    <h1>{{ title }}</h1>
-    <div class="buses">
-      <div id="route_container" v-for="(stop, idx) in stops" :key="stop.arsId" @click="[select(idx), (station_select = stop.arsId)]">
-        <!-- <div :class="['route-type', busType[bus.busRouteType]]"></div> -->
-        <div id="route_info">
-          <div style="font-weight: 700; width: 200px">{{ stop.stationNm }}</div>
-          <div>{{ stop.direction }}행</div>
+  <div>
+    <NavComp :content="wholeText" title="탑승 가능 정류장" />
+
+    <div class="bus-list">
+      <h1>{{ title }}</h1>
+      <div class="buses">
+        <div id="route_container" v-for="(stop, idx) in stops" :key="stop.arsId" @click="[select(idx), (station_select = stop.arsId)]">
+          <!-- <div :class="['route-type', busType[bus.busRouteType]]"></div> -->
+          <div id="route_info">
+            <div style="font-weight: 700; width: 200px">{{ stop.stationNm }}</div>
+            <div>{{ stop.direction }}행</div>
+          </div>
+          <!-- <span class="time">{{ bus.msg }}</span> -->
+          <div id="riding" :class="{active: bus_active[idx]}"></div>
         </div>
-        <!-- <span class="time">{{ bus.msg }}</span> -->
-        <div id="riding" :class="{active: bus_active[idx]}"></div>
       </div>
+      <div v-if="station_select == ''" id="ridingBtn">승차 예약</div>
+      <div v-else id="ridingActiveBtn" @click="ridingReserve(station_select)">승차 예약</div>
     </div>
-    <div v-if="station_select == ''" id="ridingBtn">승차 예약</div>
-    <div v-else id="ridingActiveBtn" @click="ridingReserve(station_select)">승차 예약</div>
   </div>
 </template>
 
@@ -23,9 +27,11 @@
   import axios from 'axios';
   import {useRoute} from 'vue-router';
   import router from '@/router';
+  import NavComp from '@/components/NavComp.vue';
 
   export default {
     name: 'testView',
+    components: {NavComp},
     data() {
       return {
         bus_active: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
@@ -39,6 +45,9 @@
 
       const stops = ref({});
       const title = ref({});
+
+      // 읽을 전체 text
+      const wholeText = ref('');
 
       // 사용자 위치 확인 및 버스 경유하는 정류장 출력
       const locationSuccess = pos => {
@@ -56,6 +65,7 @@
             stops.value = res.data.msgBody.itemList;
             console.log('stops: ', stops.value);
             title.value = stops.value[0].busRouteNm;
+            wholeText.value = `노선 ${title.value}의 탑승 가능 정류장 목록. 승차 예약 버튼`;
           })
           .catch(err => console.log(err));
       };
@@ -74,6 +84,7 @@
       };
 
       return {
+        wholeText,
         title,
         stops,
         ridingReserve,
@@ -100,22 +111,36 @@
   #ridingBtn {
     font-weight: 900;
     font-size: 32px;
-    padding: 58px 94px;
     background-color: #fff;
     border-radius: 20px;
-    margin-top: 5px;
     color: $primary;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    width: calc(100% - 32px);
+    transform: translate(-50%, -40px);
   }
 
   #ridingActiveBtn {
     font-weight: 900;
     font-size: 32px;
-    padding: 58px 94px;
     background-color: #ff5f63;
     border-radius: 20px;
-    margin-top: 5px;
     color: #fff;
     cursor: pointer;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    width: calc(100% - 32px);
+    transform: translate(-50%, -40px);
   }
 
   #route_container {
@@ -139,8 +164,8 @@
     h1 {
       font-size: 30px;
       line-height: 36.6px;
-      margin-top: 97px;
-      margin-bottom: 35px;
+      margin-top: 40px;
+      margin-bottom: 40px;
       font-weight: 700;
       color: $secondary;
     }

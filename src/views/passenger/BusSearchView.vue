@@ -40,7 +40,7 @@
     },
     setup() {
       // 읽어줄 전체 텍스트
-      const wholeText = ref('버튼을 누른 후 검색어를 말해주세요. 음성 검색 버튼 ');
+      const wholeText = ref('음성으로 버스 노선 검색. 버튼을 누른 후 검색어를 말해주세요. 음성 검색 버튼 ');
 
       const title = ref('버튼을 누른 후 검색어를 말해주세요');
       const input = ref('');
