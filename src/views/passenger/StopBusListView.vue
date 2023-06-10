@@ -115,7 +115,7 @@
         console.log('넘겨주는쪽:', busData);
         router.push({
           name: 'RidingView',
-          props: {busData},
+          props: {busData: busData},
         });
       };
 
