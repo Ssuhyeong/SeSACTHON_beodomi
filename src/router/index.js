@@ -84,6 +84,28 @@ const routes = [
     name: 'StationListView',
     component: () => import('@/views/passenger/StationListView.vue'),
   },
+  // 하차 관련 검색 페이지
+  {
+    path: '/landingSearch',
+    name: 'busLandingSearchView',
+    component: () => import('@/views/passenger/landing/BusLandingSearchView.vue'),
+  },
+  {
+    path: '/keyboardLandingSearch/:keyword',
+    name: 'KeyboardLandingSearchView',
+    component: () => import('@/views/passenger/landing/KeyboardLandingSearchView.vue'),
+  },
+  {
+    path: '/landingStopBusList/:arsId/:stId',
+    name: 'LandingStopBusListView',
+    props: true,
+    component: () => import('@/views/passenger/landing/LandingStopBusListView.vue'),
+  },
+  {
+    path: '/landingStationList/:busRouteId',
+    name: 'LandingStationListView',
+    component: () => import('@/views/passenger/landing/LandingStationListView.vue'),
+  },
 ];
 
 const router = createRouter({
