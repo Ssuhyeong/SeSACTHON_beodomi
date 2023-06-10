@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {defineStore} from 'pinia';
 import {ref} from 'vue';
 
@@ -23,13 +24,35 @@ export const usePassengerStore = defineStore(
     // 시작 - 버스 위치
     const startStation = ref({}); // 승차 정거장
     const endStation = ref({}); // 하차 정거장
-
     // 끝 - 버스 위치
+
+    // 시작 - 도움 요청하기
+    const needHelp = ref(false);
+    /** 도움 요청 / 취소 메소드
+     * needHelp가 true이면 도움 요청
+     * needHelp가 false면 도움 요청 취소
+     */
+    async function helpRequestToggle() {
+      const flag = needHelp.value ? 'help' : 'cancel';
+      const option = {
+        url: `http://localhost:8080/api/pass/${flag}`,
+        data: {
+          bus_route_id: startStation.value.busRouteId,
+          origin_station: startStation.value.arsId,
+        },
+        method: 'POST',
+      };
+      const res = await axios(option);
+      console.log('도움 요청', flag, res);
+    }
+    // 끝 - 도움 요청하기
 
     return {
       announcePageContent,
       startStation,
       endStation,
+      needHelp,
+      helpRequestToggle,
     };
   },
   {

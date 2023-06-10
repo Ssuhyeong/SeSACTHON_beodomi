@@ -11,15 +11,15 @@
         <h1>{{ passengerStore.startStation.busRouteNm }} {{ passengerStore.startStation.direction }}행</h1>
       </article>
       <article class="remain">{{ remain }} 정거장 전</article>
-      <button class="help-button">승차 도움 요청</button>
-      <button class="book-button">예약 취소/변경</button>
+      <button @click="helpRequestToggle" :class="{activated: passengerStore.needHelp}" class="help-button">승차 도움 {{ passengerStore.needHelp ? '취소' : '요청' }}</button>
+      <button @click="goToListPage" class="book-button">예약 취소/변경</button>
     </main>
   </div>
 </template>
 
 <script>
   import NavCompVue from '@/components/NavComp.vue';
-  import {ref, watch} from 'vue';
+  import {onUnmounted, ref} from 'vue';
   import {usePassengerStore} from '@/store/passsengerStore';
   import {useDriverStore} from '@/store/driverStore';
   import router from '@/router';
@@ -28,43 +28,41 @@
     components: {
       NavCompVue,
     },
-    watch: {
-      'passengerStore.startStation.seq'(newValue, oldValue) {
-        console.log('바뀜: ', newValue);
-        this.remain = newValue - this.driverStore.stationIndex;
-      },
-    },
     setup() {
       const passengerStore = usePassengerStore();
       const driverStore = useDriverStore();
 
-      const isBusArrive = ref(false); // 버스 도착 여부
-      const remain = ref(passengerStore.startStation.seq - driverStore.stationIndex); // 버스가 도착하기까지 남은 정류장 수
-      watch(
-        () => passengerStore.startStation.seq,
-        (newValue, oldValue) => {
-          console.log('바뀜: ', newValue);
-          remain.value = newValue - driverStore.stationIndex;
-        },
-      );
-      watch(
-        () => remain.value,
-        (newValue, oldValue) => {
-          if (newValue == 0) {
-            router.push({name: 'RidingAlarmView'});
-          }
-        },
-      );
+      // 시작 - 버스 현재 위치 갱신하기
+      const remain = ref(passengerStore.startStation.seq - driverStore.stationIndex - 1); // 버스가 도착하기까지 남은 정류장 수
+      const remainTime = setInterval(() => {
+        const busOrder = JSON.parse(localStorage.getItem('driver')).stationIndex;
+        remain.value = passengerStore.startStation.seq - busOrder - 1;
+        // if (remain.value === 0) {
+        //   router.push({name: 'RidingAlarmView'});
+        // }
+      }, 1000);
+      // 끝 - 버스 현재 위치 갱신하기
 
-      function getRemainStation() {
-        const busOrd = driverStore.stationIndex; // 버스의 현재 위치
-        const stOrd = passengerStore.startStation.seq;
+      // 시작 - 승차 도움 요청
+      function helpRequestToggle() {
+        passengerStore.needHelp = !passengerStore.needHelp;
+        passengerStore.helpRequestToggle();
+      }
+      // 끝 - 승차 도움 요청
+
+      function goToListPage() {
+        router.go(-1);
       }
 
+      onUnmounted(() => {
+        clearInterval(remainTime);
+      });
+
       return {
-        isBusArrive,
         passengerStore,
         remain,
+        helpRequestToggle,
+        goToListPage,
       };
     },
   };
@@ -110,16 +108,19 @@
         font-size: 2rem;
         font-weight: bold;
         transition: 0.1s;
+        cursor: pointer;
         &:active {
           transform: scale(0.98);
         }
         &.help-button {
           margin-bottom: 0.5rem;
           border: 5px solid $red;
-          color: $red;
-          &:hover {
-            background: $red;
-            color: $white;
+          background: $red;
+          color: $white;
+          &:hover,
+          &.activated {
+            color: $red;
+            background: transparent;
           }
         }
         &.book-button {
