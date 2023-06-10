@@ -4,7 +4,7 @@
 
     <div class="main">
       <button class="btn" @click="goSearchView">버스 노선 검색</button>
-      <button class="btn" @click="goFavoriteStopView">승차벨 사용 이력</button>
+      <button class="btn" @click="goStopHistoryView">승차벨 사용 이력</button>
       <button class="btn" @click="goNearStopView">가까운 정류장</button>
     </div>
   </div>
@@ -26,9 +26,9 @@
         router.push('/search');
       };
 
-      // 즐겨 찾는 정류장 페이지로 이동
-      const goFavoriteStopView = () => {
-        router.push('/favoriteStop');
+      // 승차벨 사용 이력 정류장 페이지로 이동
+      const goStopHistoryView = () => {
+        router.push('/stopHistory');
       };
 
       // 가까운 정류장 페이지로 이동
@@ -39,7 +39,7 @@
       return {
         wholeText,
         goSearchView,
-        goFavoriteStopView,
+        goStopHistoryView,
         goNearStopView,
       };
     },

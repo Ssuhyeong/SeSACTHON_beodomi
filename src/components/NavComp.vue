@@ -76,8 +76,6 @@
         }, 1);
       };
 
-      console.log(props.btnBackgroundColor);
-
       // 뒤로 가기 버튼 클릭 이벤트
       const router = useRouter();
       const goBack = () => {

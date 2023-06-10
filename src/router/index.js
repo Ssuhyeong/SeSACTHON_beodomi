@@ -44,9 +44,9 @@ const routes = [
     component: () => import('@/views/passenger/KeyboardSearchView.vue'),
   },
   {
-    path: '/favoriteStop',
-    name: 'favoriteStopView',
-    component: () => import('@/views/passenger/FavoriteStopView.vue'),
+    path: '/stopHistory',
+    name: 'StopHistoryView',
+    component: () => import('@/views/passenger/StopHistoryView.vue'),
   },
   {
     // 가까운 정류장
