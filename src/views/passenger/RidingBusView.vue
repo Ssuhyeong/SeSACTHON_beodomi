@@ -13,8 +13,8 @@
         <img src="@/assets/img/shallowDoubleArrow.png" alt="2개의 화살표 아이콘" width="32" />
         <h1 class="next-station">{{ driverStore.nextStationName }}</h1>
       </article>
-      <button class="btn" @click="busSearch()">하차 정류장 미리 등록</button>
-      <button class="btn">다음 정거장에서 하차</button>
+      <button class="btn" @click="goLandingSearch">하차 정류장 미리 등록</button>
+      <button class="btn" @click="landingNextStop">다음 정거장에서 하차</button>
     </main>
   </div>
 </template>
@@ -24,17 +24,13 @@
   import router from '@/router';
   import {useDriverStore} from '@/store/driverStore';
   import {usePassengerStore} from '@/store/passsengerStore';
-  import {ref, watch, watchEffect} from 'vue';
+  import {ref} from 'vue';
+
+  import axios from '@/service/axios.js';
 
   export default {
     name: 'RidingBusView',
     components: {NavComp},
-    watch: {
-      'passengerStore.startStation.seq'(newValue, oldValue) {
-        console.log('바뀜: ', newValue);
-        this.remain = newValue - this.driverStore.stationIndex;
-      },
-    },
     setup() {
       // 읽을 전체 text
       const wholeText = ref(`탑승 중인 버스는 ${'501 새싹'}행 이며, 버스의 현재 위치는 ${'어쩌구 사거리'}입니다. 하차 정류장 미리 등록 버튼, 다음 정거장에서 하차 버튼`);
@@ -43,44 +39,43 @@
       const driverStore = useDriverStore();
 
       const isBusArrive = ref(false); // 버스 도착 여부
-      const remain = ref(passengerStore.startStation.seq - driverStore.stationIndex); // 버스가 도착하기까지 남은 정류장 수
 
-      console.log(driverStore);
+      // 하차정류장 미리 등록 페이지로 이동
+      const goLandingSearch = () => {
+        router.push('/landingSearch');
+      };
 
-      watch(
-        () => passengerStore.startStation.seq,
-        (newValue, oldValue) => {
-          console.log('바뀜: ', newValue);
-          remain.value = newValue - driverStore.stationIndex;
-        },
-      );
+      // 다음 정거장에서 하차 버튼 클릭 이벤트
+      const landingNextStop = () => {
+        const endBusData = driverStore.routeInfo[driverStore.stationIndex + 1];
+        // 하차 요청
+        // 1. backend로 api 요청
+        const url = '/api/pass/destination';
 
-      watch(
-        () => remain.value,
-        (newValue, oldValue) => {
-          if (newValue == 0) {
-            router.push({name: 'RidingAlarmView'});
-          }
-        },
-      );
+        axios
+          .put(url, {
+            bus_route_id: endBusData.busRouteId,
+            origin_station: passengerStore.startStation.arsId,
+            destination_station: endBusData.arsId,
+          })
+          .then(res => console.log('하차 요청 성공'))
+          .catch(err => console.log(err));
 
-      function getRemainStation() {
-        const busOrd = driverStore.stationIndex; // 버스의 현재 위치
-        const stOrd = passengerStore.startStation.seq;
-      }
+        // 2. pinia 저장
+        passengerStore.endStation = endBusData;
+
+        // 3. 하차 예약 확인 페이지로 이동
+        router.push('/landing');
+      };
 
       return {
         wholeText,
         isBusArrive,
         passengerStore,
         driverStore,
-        remain,
+        goLandingSearch,
+        landingNextStop,
       };
-    },
-    methods: {
-      busSearch() {
-        this.$router.push({name: 'busLandingSearchView'});
-      },
     },
   };
 </script>
