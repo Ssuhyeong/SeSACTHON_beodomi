@@ -27,6 +27,7 @@
   import {useRoute} from 'vue-router';
   import router from '@/router';
   import NavComp from '@/components/NavComp.vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
 
   export default {
     name: 'StopBusList',
@@ -107,6 +108,7 @@
         return res.msgBody.itemList[0].arrmsg1;
       };
 
+      const passengerStore = usePassengerStore();
       const ridingReserve = busData => {
         if (localStorage.getItem('history') == null) {
           const history = [];
@@ -119,9 +121,10 @@
           localStorage.setItem('history', JSON.stringify(newHistory));
         }
 
+        console.log('버스 데이터:', busData);
+        passengerStore.startStation = busData;
         router.push({
           name: 'RidingView',
-          params: {busData: JSON.stringify(busData)},
         });
       };
 

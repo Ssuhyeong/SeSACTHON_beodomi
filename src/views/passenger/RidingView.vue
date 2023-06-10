@@ -1,156 +1,132 @@
 <template>
-  <div id="riding_container">
-    <div id="text_container">
-      <div v-if="flag" id="title_text">버스 정보</div>
-      <div v-else id="title_bus_text">탑승 할 버스</div>
-    </div>
-    <div id="bus_info">
-      <div id="track">지선</div>
-      <div>
-        <div id="bus_number">5678 <span>선진운수</span></div>
-        <div class="bus_route">구산동 -> 교대역</div>
-        <div class="bus_route">(상향)</div>
-      </div>
-    </div>
-
-    <div v-if="flag" id="bell_btn" @click="takeBus()">승차벨 누르기</div>
-    <div v-else>
-      <div id="help_btn">승차 도움 요청</div>
-      <div class="sub_text">버스 현재 위치</div>
-      <div class="station_info">강남역 정류성</div>
-      <div class="sub_text">승차 정보</div>
-      <div class="station_state">
-        <div style="padding-top: 17.5px">5정거장 전</div>
-        <div style="padding-top: 10px">14분 23초 후 승차</div>
-      </div>
-    </div>
+  <div class="riding-view">
+    <NavCompVue :content="wholeText" backgroundColor="#152827" btnBackgroundColor="#FFDB1D" color="#FFDB1D" theme="dark" title="승차 예약 확인" />
+    <main>
+      <article class="information">
+        <h3>승차 정류장</h3>
+        <h1>{{ passengerStore.startStation.stationNm }}</h1>
+      </article>
+      <article class="information">
+        <h3>승차 버스</h3>
+        <h1>{{ passengerStore.startStation.busRouteNm }} {{ passengerStore.startStation.direction }}행</h1>
+      </article>
+      <article class="remain">{{ remain }} 정거장 전</article>
+      <button class="help-button">승차 도움 요청</button>
+      <button class="book-button">예약 취소/변경</button>
+    </main>
   </div>
 </template>
 
 <script>
+  import NavCompVue from '@/components/NavComp.vue';
+  import {ref, watch} from 'vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
+  import {useDriverStore} from '@/store/driverStore';
+  import router from '@/router';
+
   export default {
-    name: 'RidingView',
-    components: {},
-    data() {
-      return {
-        voice_text: '버스 정보',
-        flag: true,
-      };
+    components: {
+      NavCompVue,
     },
-    methods: {
-      takeBus() {
-        this.flag = false;
+    watch: {
+      'passengerStore.startStation.seq'(newValue, oldValue) {
+        console.log('바뀜: ', newValue);
+        this.remain = newValue - this.driverStore.stationIndex;
       },
+    },
+    setup() {
+      const passengerStore = usePassengerStore();
+      const driverStore = useDriverStore();
+
+      const isBusArrive = ref(false); // 버스 도착 여부
+      const remain = ref(passengerStore.startStation.seq - driverStore.stationIndex); // 버스가 도착하기까지 남은 정류장 수
+      watch(
+        () => passengerStore.startStation.seq,
+        (newValue, oldValue) => {
+          console.log('바뀜: ', newValue);
+          remain.value = newValue - driverStore.stationIndex;
+        },
+      );
+      watch(
+        () => remain.value,
+        (newValue, oldValue) => {
+          if (newValue == 0) {
+            router.push({name: 'RidingAlarmView'});
+          }
+        },
+      );
+
+      function getRemainStation() {
+        const busOrd = driverStore.stationIndex; // 버스의 현재 위치
+        const stOrd = passengerStore.startStation.seq;
+      }
+
+      return {
+        isBusArrive,
+        passengerStore,
+        remain,
+      };
     },
   };
 </script>
 
 <style lang="scss" scoped>
-  span {
-    font-weight: 400;
-    font-size: 24px;
-    color: #878787;
-  }
-
-  #bus_number {
-    font-weight: 700;
-    font-size: 28px;
-    text-align: left;
-  }
-
-  #track {
-    font-weight: 700;
-    font-size: 28px;
-    background-color: #f0f0f0;
-    padding: 30.16px 24px;
-    border-radius: 10px;
-  }
-
-  #bus_info {
+  .riding-view {
+    color: $white;
+    height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 315px;
-    height: 99.35px;
-    margin: 0 auto;
-  }
-
-  #text_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #title_text {
-    font-weight: 700;
-    font-size: 28px;
-    margin-top: 109px;
-    margin-bottom: 30px;
-    width: 220px;
-  }
-
-  #title_bus_text {
-    font-weight: 700;
-    font-size: 28px;
-    margin-top: 70px;
-    margin-bottom: 30px;
-    width: 220px;
-  }
-
-  #bell_btn {
-    background-color: $primary;
-    color: $secondary;
-    font-weight: 700;
-    font-size: 30px;
-    padding: 51px 0px;
-    margin-top: 70px;
-    cursor: pointer;
-  }
-
-  #help_btn {
-    background-color: $primary;
-    color: $secondary;
-    font-weight: 700;
-    font-size: 30px;
-    padding: 32.5px 0px;
-    margin: 22px 0px;
-    cursor: pointer;
-  }
-
-  .station_info {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    width: 358px;
-    height: 98px;
-    border-radius: 10px;
-    background-color: #f0f0f0;
-    font-weight: 700;
-    font-size: 24px;
-    color: #404040;
-  }
-
-  .station_state {
-    margin: 0 auto;
-    width: 358px;
-    height: 98px;
-    border-radius: 10px;
-    background-color: #f0f0f0;
-    font-weight: 700;
-    font-size: 24px;
-    color: #404040;
-  }
-
-  .bus_route {
-    font-weight: 400;
-    font-size: 24px;
-    text-align: left;
-  }
-
-  .sub_text {
-    font-weight: 700;
-    font-size: 28px;
-    margin: 20px;
+    flex-direction: column;
+    main {
+      flex-grow: 1;
+      padding: 1rem;
+      display: grid;
+      grid-template: 21fr 21fr 16fr 21fr 21fr / 1fr;
+      & > * {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        // background: skyblue;
+      }
+      .information {
+        border-bottom: 1px solid $gray;
+        h3 {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+        }
+        h1 {
+          font-size: 2rem;
+          color: $secondary;
+          font-weight: bold;
+        }
+      }
+      .remain {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+      button {
+        border-radius: 1rem;
+        background: transparent;
+        font-size: 2rem;
+        font-weight: bold;
+        transition: 0.1s;
+        &:active {
+          transform: scale(0.98);
+        }
+        &.help-button {
+          margin-bottom: 0.5rem;
+          border: 5px solid $red;
+          color: $red;
+          &:hover {
+            background: $red;
+            color: $white;
+          }
+        }
+        &.book-button {
+          margin-top: 0.5rem;
+          background: $secondary;
+        }
+      }
+    }
   }
 </style>

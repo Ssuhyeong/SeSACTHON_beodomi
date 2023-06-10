@@ -1,65 +1,67 @@
 <template>
-  <div>
-    <div v-if="type == '승차'">
-      <h1>탑승 할 버스가<br/> 정류장에 도착했습니다!</h1>
-      <div v-if="flag">
-        <div class="keyboard_btn">탑승 완료</div>
-        <div class="keyboard_btn">다른 버스 검색</div>
-      </div>
-      <div v-else class="help_btn">다른 버스 검색</div>
-    </div>
-    <div v-if="type == '하차'">
-      <h1>버스가 하차 정거장에 <br/>도착했습니다.</h1>
-      <div>
-        <div class="keyboard_btn">하차 완료</div>
-        <div class="keyboard_btn">다른 정거장에서 하차</div>
-      </div>
-    </div>
+  <div class="riding-alarm-view">
+    <NavCompVue :content="wholeText" backgroundColor="white" btnBackgroundColor="#152827" color="black" theme="light" title="운행정보" />
+    <main>
+      <article>버스가 도착했습니다</article>
+      <section class="button-group">
+        <button class="confirm-button">승차 완료</button>
+        <button class="additional-button">다른 버스 검색</button>
+      </section>
+    </main>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'RidingAlarmView',
-  components: {
-    
-  },
-  data() {
-    return {
-      flag: true,
-      type: "하차"
-    }
-  },
-}
+  import NavCompVue from '@/components/NavComp.vue';
+  export default {
+    components: {
+      NavCompVue,
+    },
+  };
 </script>
 
 <style lang="scss" scoped>
-
-h1 {
-  font-weight: 700;
-  font-size: 28px;
-  margin:110px 0px;
-  line-height: 140%;
-}
-
-.keyboard_btn {
-  background-color: $primary;
-  color: $secondary;
-  font-weight: 700;
-  font-size: 30px;
-  padding: 51px 0px;
-  margin: 13px 0px;
-  cursor: pointer;
-}
-
-.help_btn {
-  background-color: $primary;
-  color: $secondary;
-  font-weight: 700;
-  font-size: 30px;
-  padding: 51px 0px;
-  margin-top: 180px;
-  cursor: pointer;
-}
-
+  .riding-alarm-view {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: $white;
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      article {
+        font-size: 2rem;
+        font-weight: bold;
+        word-break: keep-all;
+      }
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        box-sizing: border-box;
+        button {
+          font-size: 2rem;
+          height: 10vh;
+          border: none;
+          border-radius: 1rem;
+          transition: 0.1s;
+          font-weight: bold;
+          cursor: pointer;
+          &:active {
+            transform: scale(0.98);
+          }
+          &.confirm-button {
+            background: $primary;
+            color: $secondary;
+            margin-bottom: 1rem;
+          }
+          &.additional-button {
+            background: $secondary;
+          }
+        }
+      }
+    }
+  }
 </style>

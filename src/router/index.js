@@ -63,7 +63,7 @@ const routes = [
   },
   {
     // 승차벨 페이지
-    path: '/riding/:busData',
+    path: '/riding',
     name: 'RidingView',
     component: () => import('@/views/passenger/RidingView.vue'),
   },
