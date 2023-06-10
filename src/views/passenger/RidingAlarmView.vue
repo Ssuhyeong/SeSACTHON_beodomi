@@ -5,7 +5,7 @@
       <article>버스가 도착했습니다</article>
       <section class="button-group">
         <button class="confirm-button" @click="goRidingBusView">승차 완료</button>
-        <button class="additional-button">다른 버스 검색</button>
+        <button class="additional-button" @click="goSearchView">다른 버스 검색</button>
       </section>
     </main>
   </div>
@@ -23,11 +23,16 @@
 
       // 승차 완료 버튼 클릭 이벤트
       const goRidingBusView = () => {
-        router.push('/ridingBus');
+        router.push({name: 'RidingBusView'});
+      };
+
+      const goSearchView = () => {
+        router.push({name: 'busSearchView'});
       };
 
       return {
         goRidingBusView,
+        goSearchView,
       };
     },
   };
