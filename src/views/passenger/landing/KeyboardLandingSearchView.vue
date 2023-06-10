@@ -51,7 +51,7 @@
   import NavComp from '@/components/NavComp.vue';
 
   export default {
-    name: 'KeyboardSearchView',
+    name: 'KeyboardLandingSearch',
     components: {NavComp},
     data() {
       return {

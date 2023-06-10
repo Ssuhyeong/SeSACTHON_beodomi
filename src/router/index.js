@@ -75,6 +75,12 @@ const routes = [
   },
   {
     // 정거장 도착 알림
+    path: '/landingAlarm',
+    name: 'LandingAlarmView',
+    component: () => import('@/views/passenger/LandingAlarmView.vue'),
+  },
+  {
+    // 정거장 도착 알림
     path: '/landing',
     name: 'LandingView',
     component: () => import('@/views/passenger/LandingView.vue'),

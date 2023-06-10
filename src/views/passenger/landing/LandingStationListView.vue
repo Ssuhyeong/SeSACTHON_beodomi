@@ -30,7 +30,7 @@
   import NavComp from '@/components/NavComp.vue';
 
   export default {
-    name: 'testView',
+    name: 'LandingStationList',
     components: {NavComp},
     data() {
       return {
