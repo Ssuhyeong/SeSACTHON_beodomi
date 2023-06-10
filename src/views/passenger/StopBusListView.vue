@@ -3,7 +3,7 @@
   <div>
     <NavComp :content="wholeText" title="탑승 가능 버스" />
     <div class="bus-list">
-      <h1>상왕십리역</h1>
+      <h1>{{ title }}</h1>
       <div class="buses">
         <!-- <div class="bus" v-for="bus in buses" :key="bus.busRouteId">
         <div :class="['route-type', busType[bus.busRouteType]]"></div>
@@ -76,19 +76,22 @@
 
           buses.value.forEach(async (bus, idx) => {
             const ord = await getOrd(bus);
-            console.log(ord);
 
             // 가져온 순번으로 api 호출해서 특정 역의 특정 노선 도착 예정 정보 get
             // buses에 추가하기
-            const prevData = await getPrevData(ord, bus.busRouteId);
-            console.log(prevData);
-            const prevArr = prevData.split('[');
-            if (prevArr.length > 1) {
-              // prevArr = [2분 7초후, 0번째 전] ]
-              buses.value[idx].msg = prevArr[1].slice(0, -1);
+            if (ord != '') {
+              const prevData = await getPrevData(ord, bus.busRouteId);
+              const prevArr = prevData.split('[');
+              if (prevArr.length > 1) {
+                // prevArr = [2분 7초후, 0번째 전] ]
+                buses.value[idx].msg = prevArr[1].slice(0, -1);
+              } else {
+                // prevArr = [곧 도착]
+                buses.value[idx].msg = prevArr[0];
+              }
             } else {
-              // prevArr = [곧 도착]
-              buses.value[idx].msg = prevArr[0];
+              // 정보 없음
+              buses.value[idx].msg = '정보없음';
             }
           });
         })
@@ -106,9 +109,8 @@
         const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${routeId}&ord=${ord}&stId=${stId}&resultType=json`;
         const data = await axios.get(url);
         const res = await data.data;
-        console.log('res', res);
-        title.value = data.data.msgBody.itemList[0].stNm;
-        return data.data.msgBody.itemList[0].arrmsg1;
+        title.value = res.msgBody.itemList[0].stNm;
+        return res.msgBody.itemList[0].arrmsg1;
       };
 
       const ridingReserve = busRouteId => {
