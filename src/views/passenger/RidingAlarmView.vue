@@ -4,7 +4,7 @@
     <main>
       <article>버스가 도착했습니다</article>
       <section class="button-group">
-        <button class="confirm-button">승차 완료</button>
+        <button class="confirm-button" @click="goRidingBusView">승차 완료</button>
         <button class="additional-button">다른 버스 검색</button>
       </section>
     </main>
@@ -13,9 +13,22 @@
 
 <script>
   import NavCompVue from '@/components/NavComp.vue';
+  import {useRouter} from 'vue-router';
   export default {
     components: {
       NavCompVue,
+    },
+    setup() {
+      const router = useRouter();
+
+      // 승차 완료 버튼 클릭 이벤트
+      const goRidingBusView = () => {
+        router.push('/ridingBus');
+      };
+
+      return {
+        goRidingBusView,
+      };
     },
   };
 </script>

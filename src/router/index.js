@@ -106,6 +106,12 @@ const routes = [
     name: 'LandingStationListView',
     component: () => import('@/views/passenger/landing/LandingStationListView.vue'),
   },
+  {
+    //  탑승 중인 버스
+    path: '/ridingBus',
+    name: 'RidingBusView',
+    component: () => import('@/views/passenger/RidingBusView.vue'),
+  },
 ];
 
 const router = createRouter({
