@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia';
+import {ref} from 'vue';
 
 export const usePassengerStore = defineStore('passenger', () => {
   /** 커스텀 콘텐츠를 읽어주는 함수
@@ -16,7 +17,15 @@ export const usePassengerStore = defineStore('passenger', () => {
       htmlElement.removeAttribute('aria-live');
     }, 100);
   }
+
+  const busData = ref({});
+  const startStation = ref({});
+  const endStation = ref({});
+
+  busData.value = {id: 123};
+
   return {
     announcePageContent,
+    busData,
   };
 });

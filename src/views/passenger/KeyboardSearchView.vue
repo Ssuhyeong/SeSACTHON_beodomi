@@ -78,8 +78,10 @@
 
         // 사용자 위치 기준으로 가까운 정류장 get
         // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
+        const tmpX = 126.910257;
+        const tmpY = 37.581632;
 
-        const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&tmX=${127.00911}&tmY=${37.56652}&radius=${2000}&resultType=json`;
+        const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&tmX=${tmpX}&tmY=${tmpY}&radius=${2000}&resultType=json`;
         axios
           .get(url)
           .then(res => {

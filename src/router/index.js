@@ -65,7 +65,6 @@ const routes = [
     // 승차벨 페이지
     path: '/riding',
     name: 'RidingView',
-    props: true,
     component: () => import('@/views/passenger/RidingView.vue'),
   },
   {

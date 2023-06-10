@@ -33,6 +33,7 @@
   import {useRoute} from 'vue-router';
   import router from '@/router';
   import NavComp from '@/components/NavComp.vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
 
   export default {
     name: 'StopBusList',
@@ -113,11 +114,12 @@
         return res.msgBody.itemList[0].arrmsg1;
       };
 
+      const passengerStore = usePassengerStore();
       const ridingReserve = busData => {
         console.log('넘겨주는쪽:', busData);
+        passengerStore.busData = busData;
         router.push({
           name: 'RidingView',
-          props: {busData: busData},
         });
       };
 

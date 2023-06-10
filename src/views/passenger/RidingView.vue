@@ -20,22 +20,20 @@
 <script>
   import NavCompVue from '@/components/NavComp.vue';
   import {ref} from 'vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
 
   export default {
     components: {
       NavCompVue,
     },
-    props: {
-      busData: Object,
-    },
-    mounted() {
-      console.log(this.busData);
-    },
     setup() {
+      const passengerStore = usePassengerStore();
+      console.log(passengerStore.busData);
       // 버스 도착 여부
       const isBusArrive = ref(false);
       return {
         isBusArrive,
+        passengerStore,
       };
     },
   };
