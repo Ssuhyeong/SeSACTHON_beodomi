@@ -27,6 +27,7 @@
   import {useRoute} from 'vue-router';
   import router from '@/router';
   import NavComp from '@/components/NavComp.vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
 
   export default {
     name: 'LandingStopBusList',
@@ -107,7 +108,9 @@
         return res.msgBody.itemList[0].arrmsg1;
       };
 
+      const passengerStore = usePassengerStore();
       const landingReserve = busData => {
+        passengerStore.endStation = busData;
         router.push({
           name: 'LandingView',
         });

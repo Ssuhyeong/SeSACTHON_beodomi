@@ -28,6 +28,7 @@
   import {useRoute} from 'vue-router';
   import router from '@/router';
   import NavComp from '@/components/NavComp.vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
 
   export default {
     name: 'LandingStationList',
@@ -76,7 +77,9 @@
 
       navigator.geolocation.getCurrentPosition(locationSuccess, locationFail);
 
+      const passengerStore = usePassengerStore();
       const landingReserve = busData => {
+        passengerStore.endStation = busData;
         router.push({
           name: 'LandingView',
         });
