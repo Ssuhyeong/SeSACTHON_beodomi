@@ -114,9 +114,20 @@
       };
 
       const ridingReserve = busData => {
+        if (localStorage.getItem('history') == null) {
+          const history = [];
+
+          history.push(busData);
+          localStorage.setItem('history', JSON.stringify(history));
+        } else {
+          var newHistory = JSON.parse(localStorage.getItem('history'));
+          newHistory.push(busData);
+          localStorage.setItem('history', JSON.stringify(newHistory));
+        }
+
         router.push({
           name: 'RidingView',
-          params: {busData: busData},
+          params: {busData: JSON.stringify(busData)},
         });
       };
 
