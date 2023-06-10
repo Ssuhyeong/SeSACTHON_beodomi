@@ -6,7 +6,7 @@
       :btnBackgroundColor="searchType === 'voice' ? '#152827' : '#FFDB1D'"
       :color="searchType === 'voice' ? 'black' : '#FFDB1D'"
       :theme="searchType === 'voice' ? 'light' : 'dark'"
-      title="버스 노선 검색"
+      title="하차 정류장 미리 등록"
     />
     <div class="bus-search" id="container">
       <ToggleComp style="margin-top: 40px" @getSearchType="getSearchType" />
@@ -32,7 +32,7 @@
   import NavComp from '@/components/NavComp.vue';
 
   export default {
-    name: 'BusSearchView',
+    name: 'BusLandingSearch',
     components: {
       VoiceComp,
       ToggleComp,

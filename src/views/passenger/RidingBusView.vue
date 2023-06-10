@@ -13,7 +13,7 @@
         <img src="@/assets/img/shallowDoubleArrow.png" alt="2개의 화살표 아이콘" width="32" />
         <h1 class="next-station">{{ driverStore.nextStationName }}</h1>
       </article>
-      <button class="btn">하차 정류장 미리 등록</button>
+      <button class="btn" @click="busSearch()">하차 정류장 미리 등록</button>
       <button class="btn">다음 정거장에서 하차</button>
     </main>
   </div>
@@ -76,6 +76,11 @@
         driverStore,
         remain,
       };
+    },
+    methods: {
+      busSearch() {
+        this.$router.push({name: 'busLandingSearchView'});
+      },
     },
   };
 </script>

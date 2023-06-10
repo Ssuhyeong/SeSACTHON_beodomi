@@ -5,7 +5,7 @@
     <div class="bus-list">
       <h1>{{ title }}</h1>
       <div class="buses">
-        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus.busRouteId)]">
+        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), getBusData(bus.busRouteId, idx)]">
           <div :class="['route-type', busType[bus.busRouteType]]"></div>
           <div id="route_info">
             <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
@@ -29,7 +29,7 @@
   import NavComp from '@/components/NavComp.vue';
 
   export default {
-    name: 'StopBusList',
+    name: 'LandingStopBusList',
     components: {NavComp},
     data() {
       return {
@@ -136,6 +136,18 @@
           }
           this.bus_active[idx] = !this.bus_active[idx];
         }
+      },
+      getBusData(busRouteId, idx) {
+        // 사용자 위치 기준으로 가까운 정류장 get
+        // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
+
+        const url = `http://ws.bus.go.kr/api/rest/busRouteInfo/getStaionByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${busRouteId}&resultType=json`;
+        axios
+          .get(url)
+          .then(res => {
+            this.bus_select = res.data.msgBody.itemList[idx];
+          })
+          .catch(err => console.log(err));
       },
     },
   };
