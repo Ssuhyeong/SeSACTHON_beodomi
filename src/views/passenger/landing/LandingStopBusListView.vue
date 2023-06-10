@@ -1,104 +1,127 @@
 <template>
   <!-- 역에서 탈 수 있는 버스 목록 조회 페이지 -->
   <div>
-    <NavComp :content="wholeText" title="탑승 가능 정류장" />
-
+    <NavComp :content="wholeText" title="탑승 가능 버스" />
     <div class="bus-list">
       <h1>{{ title }}</h1>
       <div class="buses">
-        <div id="route_container" v-for="(stop, idx) in stops" :key="stop.arsId" @click="[select(idx), (station_select = stop)]">
-          <!-- <div :class="['route-type', busType[bus.busRouteType]]"></div> -->
+        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus.busRouteId)]">
+          <div :class="['route-type', busType[bus.busRouteType]]"></div>
           <div id="route_info">
-            <div style="font-weight: 700; width: 200px">{{ stop.stationNm }}</div>
-            <div>{{ stop.direction }}행</div>
+            <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
           </div>
-          <!-- <span class="time">{{ bus.msg }}</span> -->
+          <div style="color: #fff; width: 100px">{{ bus.stEnd }}행</div>
+          <span class="time">{{ bus.msg }}</span>
           <div id="riding" :class="{active: bus_active[idx]}"></div>
         </div>
       </div>
-      <div v-if="station_select == ''" id="ridingBtn">승차 예약</div>
-      <div v-else id="ridingActiveBtn" @click="ridingReserve(station_select)">승차 예약</div>
+      <div v-if="bus_select == ''" id="ridingBtn">하차 예약</div>
+      <div v-else id="ridingActiveBtn" @click="landingReserve(bus_select)">하차 예약</div>
     </div>
   </div>
 </template>
 
 <script>
-  import {ref} from 'vue';
   import axios from 'axios';
+  import {ref} from 'vue';
   import {useRoute} from 'vue-router';
   import router from '@/router';
   import NavComp from '@/components/NavComp.vue';
 
   export default {
-    name: 'testView',
+    name: 'StopBusList',
     components: {NavComp},
     data() {
       return {
-        bus_active: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-        station_select: '',
+        bus_active: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        bus_select: '',
       };
     },
     setup() {
       const route = useRoute();
-      const userLat = ref(0);
-      const userLng = ref(0);
-
-      const stops = ref({});
-      const title = ref({});
-
-      // 읽을 전체 text
-      const wholeText = ref('');
-
-      // 사용자 위치 확인 및 버스 경유하는 정류장 출력
-      const locationSuccess = pos => {
-        userLat.value = pos.coords.latitude;
-        userLng.value = pos.coords.longitude;
-        console.log(`현위치: ${userLat.value}, ${userLng.value}`);
-
-        // 사용자 위치 기준으로 가까운 정류장 get
-        // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
-
-        const url = `http://ws.bus.go.kr/api/rest/busRouteInfo/getStaionByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${route.params.busRouteId}&resultType=json`;
-        axios
-          .get(url)
-          .then(res => {
-            stops.value = res.data.msgBody.itemList;
-            console.log('stops: ', stops.value);
-            title.value = stops.value[0].busRouteNm;
-            wholeText.value = `노선 ${title.value}의 탑승 가능 정류장 목록. 승차 예약 버튼`;
-          })
-          .catch(err => console.log(err));
+      const buses = ref([]);
+      const busType = {
+        1: 'airplane', // 공항
+        2: 'town', // 마을
+        3: 'trunk', // 간선
+        4: 'branch-line', // 지선
+        5: 'cycle', // 순환
+        6: 'wide-area', // 광역
+        7: 'incheon', // 인천
+        8: 'gyeonggi', // 경기
+        9: 'abolition', // 폐지
+        0: 'public', // 공용
       };
 
-      const locationFail = err => {
-        console.log('현위치를 찾을 수 없습니다');
+      const title = ref('');
+      const arsId = route.params.arsId;
+      const stId = route.params.stId;
+
+      const url = `http://ws.bus.go.kr/api/rest/stationinfo/getRouteByStation?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&arsId=${arsId}&resultType=json`;
+
+      // 특정 정류장에 경우하는 버스 노선 정보 list
+      axios
+        .get(url)
+        .then(res => {
+          buses.value = res.data.msgBody.itemList;
+          console.log(buses.value);
+
+          // buses 돌면서 buses의 순번을 가져오기
+
+          buses.value.forEach(async (bus, idx) => {
+            const ord = await getOrd(bus);
+
+            // 가져온 순번으로 api 호출해서 특정 역의 특정 노선 도착 예정 정보 get
+            // buses에 추가하기
+            if (ord != '') {
+              const prevData = await getPrevData(ord, bus.busRouteId);
+              const prevArr = prevData.split('[');
+              if (prevArr.length > 1) {
+                // prevArr = [2분 7초후, 0번째 전] ]
+                buses.value[idx].msg = prevArr[1].slice(0, -1);
+              } else {
+                // prevArr = [곧 도착]
+                buses.value[idx].msg = prevArr[0];
+              }
+            } else {
+              // 정보 없음
+              buses.value[idx].msg = '정보없음';
+            }
+          });
+        })
+        .catch(err => console.log(err));
+
+      // 버스의 순번 가져오기
+      const getOrd = async bus => {
+        const url = `http://localhost:8080/api/pass/ord/${bus.busRouteId}/${arsId}`;
+        const data = await axios.get(url);
+        return data.data;
       };
 
-      navigator.geolocation.getCurrentPosition(locationSuccess, locationFail);
+      // 특정 정거장에서 특정 노선의 도착 예정 정보 가져오기
+      const getPrevData = async (ord, routeId, idx) => {
+        const url = `http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${routeId}&ord=${ord}&stId=${stId}&resultType=json`;
+        const data = await axios.get(url);
+        const res = await data.data;
+        title.value = res.msgBody.itemList[0].stNm;
+        return res.msgBody.itemList[0].arrmsg1;
+      };
 
-      const ridingReserve = busData => {
-        if (localStorage.getItem('history') == null) {
-          const history = [];
-
-          history.push(busData);
-          localStorage.setItem('history', JSON.stringify(history));
-        } else {
-          var newHistory = JSON.parse(localStorage.getItem('history'));
-          newHistory.push(busData);
-          localStorage.setItem('history', JSON.stringify(newHistory));
-        }
-
+      const landingReserve = busData => {
         router.push({
-          name: 'RidingView',
-          params: {busData: JSON.stringify(busData)},
+          name: 'LandingView',
         });
       };
 
+      // 읽어줄 전체 text
+      const wholeText = `${title.value}에서 탑승 가능한 버스 노선 목록. 승차 예약 버튼`;
+
       return {
-        wholeText,
         title,
-        stops,
-        ridingReserve,
+        buses,
+        busType,
+        landingReserve,
+        wholeText,
       };
     },
     methods: {

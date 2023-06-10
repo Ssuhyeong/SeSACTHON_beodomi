@@ -5,13 +5,7 @@
     <div class="bus-list">
       <h1>{{ title }}</h1>
       <div class="buses">
-        <!-- <div class="bus" v-for="bus in buses" :key="bus.busRouteId">
-        <div :class="['route-type', busType[bus.busRouteType]]"></div>
-        <span class="title">{{ bus.busRouteNm }}</span>
-        <span>{{ bus.stEnd }}행</span>
-        <span class="time">{{ bus.msg }}</span>
-      </div> -->
-        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus)]">
+        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), getBusData(bus.busRouteId, idx)]">
           <div :class="['route-type', busType[bus.busRouteType]]"></div>
           <div id="route_info">
             <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
@@ -116,10 +110,27 @@
 
       const passengerStore = usePassengerStore();
       const ridingReserve = busData => {
+<<<<<<< HEAD
         console.log('넘겨주는쪽:', busData);
         passengerStore.busData = busData;
         router.push({
           name: 'RidingView',
+=======
+        if (localStorage.getItem('history') == null) {
+          const history = [];
+
+          history.push(busData);
+          localStorage.setItem('history', JSON.stringify(history));
+        } else {
+          var newHistory = JSON.parse(localStorage.getItem('history'));
+          newHistory.push(busData);
+          localStorage.setItem('history', JSON.stringify(newHistory));
+        }
+
+        router.push({
+          name: 'RidingView',
+          params: {busData: JSON.stringify(busData)},
+>>>>>>> 487b027a26859f2ea890920b0830b9cb09b933e0
         });
       };
 
@@ -146,6 +157,18 @@
           }
           this.bus_active[idx] = !this.bus_active[idx];
         }
+      },
+      getBusData(busRouteId, idx) {
+        // 사용자 위치 기준으로 가까운 정류장 get
+        // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
+
+        const url = `http://ws.bus.go.kr/api/rest/busRouteInfo/getStaionByRoute?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&busRouteId=${busRouteId}&resultType=json`;
+        axios
+          .get(url)
+          .then(res => {
+            this.bus_select = res.data.msgBody.itemList[idx];
+          })
+          .catch(err => console.log(err));
       },
     },
   };

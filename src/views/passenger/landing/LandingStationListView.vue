@@ -16,8 +16,8 @@
           <div id="riding" :class="{active: bus_active[idx]}"></div>
         </div>
       </div>
-      <div v-if="station_select == ''" id="ridingBtn">승차 예약</div>
-      <div v-else id="ridingActiveBtn" @click="ridingReserve(station_select)">승차 예약</div>
+      <div v-if="station_select == ''" id="ridingBtn">하차 예약</div>
+      <div v-else id="ridingActiveBtn" @click="landingReserve(station_select)">하차 예약</div>
     </div>
   </div>
 </template>
@@ -76,21 +76,9 @@
 
       navigator.geolocation.getCurrentPosition(locationSuccess, locationFail);
 
-      const ridingReserve = busData => {
-        if (localStorage.getItem('history') == null) {
-          const history = [];
-
-          history.push(busData);
-          localStorage.setItem('history', JSON.stringify(history));
-        } else {
-          var newHistory = JSON.parse(localStorage.getItem('history'));
-          newHistory.push(busData);
-          localStorage.setItem('history', JSON.stringify(newHistory));
-        }
-
+      const landingReserve = busData => {
         router.push({
-          name: 'RidingView',
-          params: {busData: JSON.stringify(busData)},
+          name: 'LandingView',
         });
       };
 
@@ -98,7 +86,7 @@
         wholeText,
         title,
         stops,
-        ridingReserve,
+        landingReserve,
       };
     },
     methods: {

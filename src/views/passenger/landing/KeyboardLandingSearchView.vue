@@ -10,8 +10,8 @@
       <div class="scroll">
         <template v-if="station_color == '#ffdb1d'">
           <div v-for="stop in keyword_stops" :key="stop.arsId">
-            <div id="route_container" @click="showAvailableBus(stop)">
-              <div id="route_info">
+            <div id="route_container">
+              <div id="route_info" @click="showAvailableBus(stop)">
                 <div style="font-weight: 700">{{ stop.stationNm }}</div>
                 <div>{{ stop.dist }} m</div>
               </div>
@@ -78,10 +78,8 @@
 
         // 사용자 위치 기준으로 가까운 정류장 get
         // TODO: 현재 위치를 동대문 DDP 으로 고정! 나중에 현재 위치로 바꾸깅
-        const tmpX = 126.910257;
-        const tmpY = 37.581632;
 
-        const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&tmX=${tmpX}&tmY=${tmpY}&radius=${2000}&resultType=json`;
+        const url = `http://ws.bus.go.kr/api/rest/stationinfo/getStationByPos?serviceKey=${process.env.VUE_APP_ROUTE_SERVICE_KEY}&tmX=${127.00911}&tmY=${37.56652}&radius=${2000}&resultType=json`;
         axios
           .get(url)
           .then(res => {
@@ -112,7 +110,7 @@
 
       // 역의 상세 버튼 클릭 이벤트
       const showAvailableBus = stop => {
-        if (clickStop.value === stop.arsId) {
+        if (clickStop.value !== null) {
           // 클릭 취소
           clickStop.value = null;
         } else {
@@ -137,14 +135,14 @@
       const goStopBusListView = (arsId, stationId) => {
         console.log('클릭한 정거장의 arsId: ', arsId, 'stId: ', stationId);
         router.push({
-          name: 'stopBusListView',
+          name: 'LandingStopBusListView',
           params: {arsId: arsId, stId: stationId},
         });
       };
 
       const goStationListView = busRouteId => {
         router.push({
-          name: 'StationListView',
+          name: 'LandingStationListView',
           params: {busRouteId: busRouteId},
         });
       };
