@@ -25,6 +25,12 @@
     components: {
       NavCompVue,
     },
+    props: {
+      busData: Object,
+    },
+    mounted() {
+      console.log(this.busData);
+    },
     setup() {
       // 버스 도착 여부
       const isBusArrive = ref(false);

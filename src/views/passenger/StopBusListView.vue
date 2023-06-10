@@ -112,9 +112,10 @@
       };
 
       const ridingReserve = busData => {
+        console.log('넘겨주는쪽:', busData);
         router.push({
           name: 'RidingView',
-          params: {busData: busData},
+          props: {busData},
         });
       };
 
