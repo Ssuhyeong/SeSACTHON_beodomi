@@ -11,7 +11,7 @@
         <span>{{ bus.stEnd }}행</span>
         <span class="time">{{ bus.msg }}</span>
       </div> -->
-        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus.busRouteId)]">
+        <div id="route_container" v-for="(bus, idx) in buses" :key="bus.busRouteId" @click="[select(idx), (bus_select = bus)]">
           <div :class="['route-type', busType[bus.busRouteType]]"></div>
           <div id="route_info">
             <div style="font-weight: 700; width: 40px">{{ bus.busRouteNm }}</div>
@@ -111,10 +111,10 @@
         return data.data.msgBody.itemList[0].arrmsg1;
       };
 
-      const ridingReserve = busRouteId => {
+      const ridingReserve = busData => {
         router.push({
           name: 'RidingView',
-          params: {arsId: route.params.arsId, busRouteId: busRouteId},
+          params: {busData: busData},
         });
       };
 
