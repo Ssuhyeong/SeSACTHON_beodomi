@@ -6,7 +6,7 @@
     <div class="bus-list">
       <h1>{{ title }}</h1>
       <div class="buses">
-        <div id="route_container" v-for="(stop, idx) in stops" :key="stop.arsId" @click="[select(idx), (station_select = stop.arsId)]">
+        <div id="route_container" v-for="(stop, idx) in stops" :key="stop.arsId" @click="[select(idx), (station_select = stop)]">
           <!-- <div :class="['route-type', busType[bus.busRouteType]]"></div> -->
           <div id="route_info">
             <div style="font-weight: 700; width: 200px">{{ stop.stationNm }}</div>
@@ -76,10 +76,12 @@
 
       navigator.geolocation.getCurrentPosition(locationSuccess, locationFail);
 
-      const ridingReserve = arsId => {
+      const ridingReserve = busData => {
+        // localStorage.setItem();
+
         router.push({
           name: 'RidingView',
-          params: {arsId: arsId, busRouteId: route.params.busRouteId},
+          params: {busData: busData},
         });
       };
 
