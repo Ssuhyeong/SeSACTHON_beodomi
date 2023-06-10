@@ -13,15 +13,32 @@
 
 <script>
   import NavCompVue from '@/components/NavComp.vue';
+  import {usePassengerStore} from '@/store/passsengerStore';
+  import axios from 'axios';
+
   export default {
     components: {
       NavCompVue,
     },
+    setup() {
+      const passengerStore = usePassengerStore();
+
+      return {
+        passengerStore,
+      };
+    },
     methods: {
       landingSuccess() {
+        console.log(this.passengerStore.startStation.arsId);
+        console.log(this.passengerStore.endStation.arsId);
+
+        axios.delete(`http://localhost:8080/api/pass/${this.passengerStore.startStation.arsId}/${this.passengerStore.endStation.arsId}/delete`);
+
         this.$router.push({name: 'mainView'});
       },
       busSearch() {
+        axios.delete(`http://localhost:8080/api/pass/${this.passengerStore.startStation.arsId}/${this.passengerStore.endStation.arsId}/delete`);
+
         this.$router.push({name: 'busSearchView'});
       },
     },

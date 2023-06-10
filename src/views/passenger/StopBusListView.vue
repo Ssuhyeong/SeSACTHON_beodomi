@@ -110,6 +110,7 @@
 
       const passengerStore = usePassengerStore();
       const ridingReserve = busData => {
+        // 스토리지 저장
         if (localStorage.getItem('history') == null) {
           const history = [];
 
@@ -120,6 +121,14 @@
           newHistory.push(busData);
           localStorage.setItem('history', JSON.stringify(newHistory));
         }
+
+        // 승차 db 저장
+        const dbData = {
+          bus_route_id: busData.busRouteId,
+          origin_station: busData.arsId,
+        };
+
+        axios.post('http://localhost:8080/api/pass', dbData).then(() => {});
 
         console.log('버스 데이터:', busData);
         passengerStore.startStation = busData;
