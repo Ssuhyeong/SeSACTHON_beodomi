@@ -17,7 +17,7 @@
       <template v-else>
         <div class="form-control">
           <input type="value" required="" placeholder="검색어를 입력하세요" @keyup.enter="search_keyboard" v-model="input" />
-          <img src="@/assets/img/searchBtn.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="32" height="32" style="margin-left: 20px" />
+          <img src="@/assets/img/searchBtn.png" alt="역에서 탑승가능한 버스를 보는 버튼" width="32" height="32" style="margin-left: 20px" @click="search_keyboard" />
         </div>
       </template>
     </div>
